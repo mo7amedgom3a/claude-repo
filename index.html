@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mastery Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Raleway:wght@400;500;600;700&display=swap">
+  <!-- Admin layout + fallback tokens (layered, so the kit below always wins) -->
+  <link rel="stylesheet" href="admin/css/admin.css">
+  <!-- Mastery design-system kit: drop the kit files into design-system/ -->
+  <link rel="stylesheet" href="design-system/fonts.css">
+  <link rel="stylesheet" href="design-system/tokens.css">
+</head>
+<body class="ma-page">
+  <div id="sprite" hidden></div>
+  <a class="adm-skip" href="#main">تخطي إلى المحتوى</a>
+  <div id="app" class="adm-shell"></div>
+  <div id="overlay-root"></div>
+  <div id="toast-root" class="adm-toasts" role="status" aria-live="polite"></div>
+  <script type="module" src="admin/js/main.js"></script>
+</body>
+</html>
