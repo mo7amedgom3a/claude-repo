@@ -46,35 +46,7 @@ export function renderShell(app, { path, crumbs, moduleId }) {
     ${iconBtn("panel", tr("إظهار/إخفاء القائمة الجانبية", "Toggle sidebar"), 'data-toggle-sidebar aria-keyshortcuts="Control+B"')}
   </nav>`;
 
-  const sidebar = `<nav class="ma-sidebar" aria-label="${esc(tr(activeModule.title))}">
-    <div class="ma-sidebar__head"><h2 class="ma-sidebar__title">${esc(tr(activeModule.title))}</h2></div>
-    ${activeModule.disabled ? "" : `<div class="ma-sidebar__search"><div class="ma-search">${icon("search")}
-      <input class="ma-input ma-input--search" type="search" data-nav-filter placeholder="${esc(tr("ابحث في الصفحات", "Search pages"))}" aria-label="${esc(tr("ابحث في صفحات هذا القسم", "Search pages in this domain"))}">
-    </div></div>`}
-    <div class="ma-sidebar__nav">
-      ${activeModule.sections
-        .map((s, si) => {
-          const key = `${activeModule.id}:${si}`;
-          // The section holding the active page is always revealed.
-          const holdsActive = s.items.some((i) => i.href === active?.href);
-          const open = holdsActive || !collapsedSections[key];
-          return `<div class="ma-sidebar__section" data-section>
-            <button type="button" class="ma-sidebar__section-btn" aria-expanded="${open}" aria-controls="sec-${si}" data-sec="${key}">${icon("chevron")}${esc(tr(s.title))}</button>
-            <ul class="ma-sidebar__list" id="sec-${si}" ${open ? "" : "hidden"}>
-              ${s.items
-                .map((i) => {
-                  const n = i.badge ? ops[i.badge] : 0;
-                  return `<li data-item="${esc(tr(i.title).toLowerCase())} ${esc(i.title.en.toLowerCase())}"><a class="ma-sidebar__link" href="#${i.href}" ${i.href === active?.href ? 'aria-current="page"' : ""}>
-                    <span>${esc(tr(i.title))}</span>${n ? `<span class="ma-sidebar__count">${fmtNum(n)}</span>` : ""}</a></li>`;
-                })
-                .join("")}
-            </ul>
-          </div>`;
-        })
-        .join("")}
-      <p class="ma-sidebar__empty" data-nav-empty hidden>${esc(tr("لا توجد صفحة بهذا الاسم. جرّب البحث الشامل (Ctrl K).", "No page by that name. Try global search (Ctrl K)."))}</p>
-    </div>
-  </nav>`;
+  const sidebar = `<nav class="ma-sidebar" data-sidebar aria-label="${esc(tr(activeModule.title))}">${sidebarInner(activeModule, active, collapsedSections)}</nav>`;
 
   const role = currentRole();
   const topbar = `<header class="ma-topbar">
@@ -111,10 +83,118 @@ export function renderShell(app, { path, crumbs, moduleId }) {
     </div>`;
 
   wireShell(app);
+  wirePreview(app, nav, active, activeModule);
   return app.querySelector("#main");
 }
 
-function wireShell(app) {
+/** Sidebar content for one domain. Used for the current domain and for rail hover previews. */
+function sidebarInner(module, active, collapsedSections = load("collapsedSections", {})) {
+  if (module.disabled) {
+    return `<div class="ma-sidebar__head"><h2 class="ma-sidebar__title">${esc(tr(module.title))}</h2></div>
+      <p class="ma-sidebar__empty">${esc(tr(module.note ?? { ar: "", en: "" }))}</p>`;
+  }
+  return `<div class="ma-sidebar__head"><h2 class="ma-sidebar__title">${esc(tr(module.title))}</h2></div>
+    <div class="ma-sidebar__search"><div class="ma-search">${icon("search")}
+      <input class="ma-input ma-input--search" type="search" data-nav-filter placeholder="${esc(tr("ابحث في الصفحات", "Search pages"))}" aria-label="${esc(tr("ابحث في صفحات هذا القسم", "Search pages in this domain"))}">
+    </div></div>
+    <div class="ma-sidebar__nav">
+      ${module.sections
+        .map((s, si) => {
+          const key = `${module.id}:${si}`;
+          // The section holding the active page is always revealed.
+          const holdsActive = s.items.some((i) => i.href === active?.href);
+          const open = holdsActive || !collapsedSections[key];
+          return `<div class="ma-sidebar__section" data-section>
+            <button type="button" class="ma-sidebar__section-btn" aria-expanded="${open}" aria-controls="sec-${si}" data-sec="${key}">${icon("chevron")}${esc(tr(s.title))}</button>
+            <ul class="ma-sidebar__list" id="sec-${si}" ${open ? "" : "hidden"}>
+              ${s.items
+                .map((i) => {
+                  const n = i.badge ? ops[i.badge] : 0;
+                  return `<li data-item="${esc(tr(i.title).toLowerCase())} ${esc(i.title.en.toLowerCase())}"><a class="ma-sidebar__link" href="#${i.href}" ${i.href === active?.href ? 'aria-current="page"' : ""}>
+                    <span>${esc(tr(i.title))}</span>${n ? `<span class="ma-sidebar__count">${fmtNum(n)}</span>` : ""}</a></li>`;
+                })
+                .join("")}
+            </ul>
+          </div>`;
+        })
+        .join("")}
+      <p class="ma-sidebar__empty" data-nav-empty hidden>${esc(tr("لا توجد صفحة بهذا الاسم. جرّب البحث الشامل (Ctrl K).", "No page by that name. Try global search (Ctrl K)."))}</p>
+    </div>`;
+}
+
+/**
+ * Rail preview: hovering or focusing a domain shows its feature links in the sidebar without
+ * navigating; leaving the navigation area restores the current domain. With the sidebar collapsed
+ * (or in the studio) the preview opens as a fly-out. In the mobile drawer a tap previews instead
+ * of navigating, because touch has no hover.
+ */
+function wirePreview(app, nav, active, activeModule) {
+  const drawer = app.querySelector(".ma-nav-drawer");
+  const side = app.querySelector("[data-sidebar]");
+  const rail = app.querySelector(".ma-rail");
+  let shown = activeModule.id;
+  let enterTimer;
+  let leaveTimer;
+
+  const show = (id) => {
+    if (id === shown) return;
+    const m = nav.find((x) => x.id === id);
+    if (!m) return;
+    shown = id;
+    side.innerHTML = sidebarInner(m, active);
+    side.setAttribute("aria-label", tr(m.title));
+    side.classList.toggle("is-preview", id !== activeModule.id);
+    rail.querySelectorAll("[data-module]").forEach((a) => a.classList.toggle("is-previewed", a.dataset.module === id && id !== activeModule.id));
+    wireSidebar(app);
+  };
+  const peekOpen = () => app.classList.contains("is-sidebar-collapsed") || app.classList.contains("is-studio");
+  const restore = () => {
+    show(activeModule.id);
+    app.classList.remove("is-peek");
+  };
+
+  rail.querySelectorAll("[data-module]").forEach((a) => {
+    const preview = () => {
+      clearTimeout(leaveTimer);
+      clearTimeout(enterTimer);
+      // A short delay keeps the sidebar steady while the pointer travels across the rail.
+      enterTimer = setTimeout(() => {
+        show(a.dataset.module);
+        if (peekOpen() && matchMedia("(min-width: 1024px)").matches) app.classList.add("is-peek");
+      }, 90);
+    };
+    a.addEventListener("mouseenter", preview);
+    a.addEventListener("focus", preview);
+    a.addEventListener("click", (e) => {
+      // Touch drawer: first tap shows the domain's links; the links themselves navigate.
+      if (app.classList.contains("is-nav-open") && a.dataset.module !== shown) {
+        e.preventDefault();
+        clearTimeout(enterTimer);
+        show(a.dataset.module);
+      }
+    });
+  });
+  rail.addEventListener("mouseleave", () => clearTimeout(enterTimer));
+  drawer.addEventListener("mouseleave", () => {
+    clearTimeout(enterTimer);
+    leaveTimer = setTimeout(() => {
+      if (!app.classList.contains("is-nav-open")) restore();
+    }, 250);
+  });
+  drawer.addEventListener("mouseenter", () => clearTimeout(leaveTimer));
+  drawer.addEventListener("focusout", (e) => {
+    if (!drawer.contains(e.relatedTarget) && !app.classList.contains("is-nav-open")) restore();
+  });
+  drawer.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && shown !== activeModule.id) {
+      restore();
+      rail.querySelector(`[data-module="${activeModule.id}"]`)?.focus();
+    }
+  });
+}
+
+/** Sidebar filter and collapsible sections; re-run whenever the sidebar content is swapped. */
+function wireSidebar(app) {
   app.querySelector("[data-nav-filter]")?.addEventListener("input", (e) => {
     const q = e.target.value.trim().toLowerCase();
     let any = false;
@@ -145,6 +225,10 @@ function wireShell(app) {
       save("collapsedSections", state);
     }),
   );
+}
+
+function wireShell(app) {
+  wireSidebar(app);
 
   const menuBtn = app.querySelector("[data-user-menu]");
   const pop = menuBtn.nextElementSibling;

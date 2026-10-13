@@ -68,6 +68,10 @@ The active sidebar item is the most specific `href` that matches on whole path s
 
 ## Things to try
 
+- **Hover a domain in the rail** to see its pages in the sidebar without leaving the current page;
+  move away and the sidebar returns to the current domain. Keyboard focus does the same (Esc returns).
+  With the sidebar collapsed (Ctrl/⌘ B) or in the course studio, hovering opens it as a fly-out.
+  In the phone menu, the first tap on a domain shows its pages.
 - **Ctrl/⌘ K** opens the command palette. Try `1030` (order), `create`, a course name, or `student001`.
 - **Ctrl/⌘ B** collapses the sidebar. **/** focuses the sidebar's page search.
 - Avatar menu → **View as**: switch the demo role (Super, Sales, Content, Support). Navigation,
