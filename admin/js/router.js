@@ -1,3 +1,6 @@
+import { confirmDialog } from "./components/ui.js";
+import { tr } from "./i18n.js";
+
 // Minimal hash router: "#/sales/orders/1042/payments" → handler({ params: { id: "1042", tab: "payments" } }).
 const routes = [];
 let onChange = () => {};
@@ -56,8 +59,19 @@ export function start(handler) {
   window.addEventListener("hashchange", () => {
     if (leaveGuard) {
       const msg = leaveGuard();
-      if (msg && !window.confirm(msg)) {
+      if (msg) {
+        // In-page confirmation (native confirm() is blocked in sandboxed previews).
+        const target = location.hash;
         history.replaceState(null, "", lastHash || "#/dashboard");
+        confirmDialog({
+          title: tr("مغادرة الصفحة؟", "Leave this page?"),
+          body: msg,
+          confirm: tr("مغادرة", "Leave"),
+          onConfirm() {
+            leaveGuard = null;
+            location.hash = target;
+          },
+        });
         return;
       }
     }
