@@ -7,42 +7,45 @@ export const esc = (s) =>
 /** Status always carries a word, never colour alone. */
 export function badge(def, extra = "") {
   if (!def) return "";
-  return `<span class="adm-badge adm-badge--${def.tone ?? "neutral"}">${esc(tr(def.label))}${extra}</span>`;
+  return `<span class="ma-badge ma-badge--${def.tone ?? "neutral"}">${esc(tr(def.label))}${extra}</span>`;
 }
 
 export function unconfirmed() {
-  return ` <span class="adm-flag" title="${esc(tr("التسمية غير مؤكدة من الأعمال", "Label not yet confirmed by the business"))}">${icon("alert")}<span class="adm-sr">${esc(tr("غير مؤكد", "unconfirmed"))}</span></span>`;
+  return ` <span class="ma-flag" title="${esc(tr("التسمية غير مؤكدة من الأعمال", "Label not yet confirmed by the business"))}">${icon("alert")}<span class="ma-sr">${esc(tr("غير مؤكد", "unconfirmed"))}</span></span>`;
 }
 
 export function avatar(initials, color = "var(--yellow)", lg = false) {
-  return `<span class="adm-avatar${lg ? " adm-avatar--lg" : ""}" style="background:${color}" aria-hidden="true">${esc(initials)}</span>`;
+  return `<span class="ma-avatar${lg ? " ma-avatar--lg" : ""}" style="background:${color}" aria-hidden="true">${esc(initials)}</span>`;
 }
 
+// Kit button variants: primary (one per view), secondary (ink), soft (neutral, default), ghost.
+const BTN_KIND = { primary: "primary", ink: "secondary", secondary: "secondary", ghost: "ghost", danger: "soft", "": "soft" };
+
 export function btn(label, { href, kind = "", ic, attrs = "", sm = false } = {}) {
-  const cls = `adm-btn${kind ? ` adm-btn--${kind}` : ""}${sm ? " adm-btn--sm" : ""}`;
+  const cls = `ma-btn ma-btn--${BTN_KIND[kind] ?? "soft"}${sm ? " ma-btn--sm" : ""}`;
   const inner = `${ic ? icon(ic) : ""}<span>${esc(label)}</span>`;
   return href ? `<a class="${cls}" href="#${href}" ${attrs}>${inner}</a>` : `<button type="button" class="${cls}" ${attrs}>${inner}</button>`;
 }
 
 export function iconBtn(ic, label, attrs = "", dirIcon = false) {
-  return `<button type="button" class="adm-btn adm-btn--bare" aria-label="${esc(label)}" title="${esc(label)}" ${attrs}>${icon(ic, dirIcon ? "adm-icon-dir" : "")}</button>`;
+  return `<button type="button" class="ma-btn ma-btn--bare ma-btn--icon" aria-label="${esc(label)}" title="${esc(label)}" ${attrs}>${icon(ic, dirIcon ? "ma-icon-dir" : "")}</button>`;
 }
 
 /** Shared page header: back link, title + status, subtitle, actions (one primary per view). */
 export function pageHead({ title, status = "", sub = "", actions = "", back }) {
-  return `<header class="adm-page-head">
-    <div class="adm-page-head__text">
-      ${back ? `<a class="adm-back" href="#${back.href}">${icon("arrowBack", "adm-icon-dir")}${esc(back.label)}</a>` : ""}
+  return `<header class="ma-page-head">
+    <div class="ma-page-head__text">
+      ${back ? `<a class="ma-back" href="#${back.href}">${icon("arrowBack", "ma-icon-dir")}${esc(back.label)}</a>` : ""}
       <h1>${esc(title)} ${status}</h1>
-      ${sub ? `<p class="adm-page-head__sub">${sub}</p>` : ""}
+      ${sub ? `<p class="ma-page-head__sub">${sub}</p>` : ""}
     </div>
-    ${actions ? `<div class="adm-page-head__actions">${actions}</div>` : ""}
+    ${actions ? `<div class="ma-page-head__actions">${actions}</div>` : ""}
   </header>`;
 }
 
 /** Contextual entity tabs (routes, not sidebar entries). */
 export function tabs(base, list, active) {
-  return `<nav class="adm-tabs" aria-label="${esc(tr("أقسام الصفحة", "Page sections"))}">${list
+  return `<nav class="ma-pagetabs" aria-label="${esc(tr("أقسام الصفحة", "Page sections"))}">${list
     .map(([slug, label]) => {
       const href = slug ? `${base}/${slug}` : base;
       return `<a href="#${href}"${slug === active ? ' aria-current="page"' : ""}>${esc(label)}</a>`;
@@ -51,40 +54,43 @@ export function tabs(base, list, active) {
 }
 
 export function kpi({ label, value, meta = "", delta, ic, field }) {
-  const d = delta == null ? "" : `<span class="adm-kpi__delta--${delta >= 0 ? "up" : "down"}">${delta >= 0 ? "▲" : "▼"} ${Math.abs(delta)}%</span> `;
-  const inner = `<div class="adm-kpi">
-    <span class="adm-kpi__label">${ic ? icon(ic) : ""}${esc(label)}</span>
-    <span class="adm-kpi__value">${value}</span>
-    ${meta || d ? `<span class="adm-kpi__meta">${d}${meta}</span>` : ""}
+  const d = delta == null ? "" : `<span class="ma-kpi__delta--${delta >= 0 ? "up" : "down"}">${delta >= 0 ? "▲" : "▼"} ${Math.abs(delta)}%</span> `;
+  const inner = `<div class="ma-kpi">
+    <span class="ma-kpi__label">${ic ? icon(ic) : ""}${esc(label)}</span>
+    <span class="ma-kpi__value">${value}</span>
+    ${meta || d ? `<span class="ma-kpi__meta">${d}${meta}</span>` : ""}
   </div>`;
-  return field ? `<div class="adm-field-block" style="background:${field}">${inner}</div>` : `<div class="adm-card">${inner}</div>`;
+  return field ? `<div class="ma-fieldblock" style="background:${field}">${inner}</div>` : `<div class="ma-panel">${inner}</div>`;
 }
 
 export function card(title, body, { actions = "", flush = false, id = "" } = {}) {
-  return `<section class="adm-card${flush ? " adm-card--flush" : ""}" ${id ? `id="${id}"` : ""} ${title ? `aria-label="${esc(title)}"` : ""}>
-    ${title || actions ? `<div class="adm-card__head"><h2 class="adm-card__title">${esc(title)}</h2>${actions}</div>` : ""}
+  return `<section class="ma-panel${flush ? " ma-panel--flush" : ""}" ${id ? `id="${id}"` : ""} ${title ? `aria-label="${esc(title)}"` : ""}>
+    ${title || actions ? `<div class="ma-panel__head"><h2 class="ma-panel__title">${esc(title)}</h2>${actions}</div>` : ""}
     ${body}
   </section>`;
 }
 
 export function dl(rows) {
-  return `<dl class="adm-dl">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>`;
+  return `<dl class="ma-dl">${rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${v}</dd>`).join("")}</dl>`;
 }
 
 export function empty(text, ic = "inbox", action = "") {
-  return `<div class="adm-empty">${icon(ic)}<p>${esc(text)}</p>${action}</div>`;
+  return `<div class="ma-empty">${icon(ic)}<p>${esc(text)}</p>${action}</div>`;
 }
 
-export function alert(kind, title, body = "", ic = "info") {
-  return `<div class="adm-alert adm-alert--${kind}" role="${kind === "danger" ? "alert" : "note"}">${icon(ic)}<div><p class="adm-alert__title">${esc(title)}</p>${body ? `<p class="adm-muted">${body}</p>` : ""}</div></div>`;
+/** Kit alert: solid status field, ink text, icon + bold title + one sentence. */
+export function alert(kind, title, body = "", ic) {
+  const glyph = ic ?? (kind === "success" ? "check" : kind === "info" ? "info" : "alert");
+  const role = kind === "danger" ? "alert" : "status";
+  return `<div class="ma-alert ma-alert--${kind}" role="${role}">${icon(glyph)}<div><p class="ma-alert__title">${esc(title)}</p>${body ? `<p class="ma-alert__text">${body}</p>` : ""}</div></div>`;
 }
 
 export function bars(rows, { max, fmt = (v) => v } = {}) {
   const m = max ?? Math.max(...rows.map((r) => r.value), 1);
-  return `<div class="adm-bars">${rows
+  return `<div class="ma-bars">${rows
     .map(
-      (r, i) => `<div class="adm-bar"><span>${esc(r.label)}</span><span class="adm-num">${fmt(r.value)}</span>
-      <div class="adm-bar__track"><div class="adm-bar__fill" style="width:${Math.max(2, (r.value / m) * 100)}%;background:${r.color ?? "var(--coral)"}"></div></div></div>`,
+      (r, i) => `<div class="ma-bar"><span>${esc(r.label)}</span><span class="ma-num">${fmt(r.value)}</span>
+      <div class="ma-bar__track"><div class="ma-bar__fill" style="width:${Math.max(2, (r.value / m) * 100)}%;background:${r.color ?? "var(--coral)"}"></div></div></div>`,
     )
     .join("")}</div>`;
 }
@@ -92,26 +98,26 @@ export function bars(rows, { max, fmt = (v) => v } = {}) {
 export function field({ id, label, type = "text", value = "", hint = "", options, required = false, attrs = "", rows }) {
   let control;
   if (options) {
-    control = `<select class="adm-select" id="${id}" name="${id}" ${required ? "required" : ""} ${attrs}>${options
+    control = `<select class="ma-select" id="${id}" name="${id}" ${required ? "required" : ""} ${attrs}>${options
       .map(([v, l]) => `<option value="${esc(v)}"${String(v) === String(value) ? " selected" : ""}>${esc(l)}</option>`)
       .join("")}</select>`;
   } else if (type === "textarea") {
-    control = `<textarea class="adm-textarea" id="${id}" name="${id}" rows="${rows ?? 4}" ${required ? "required" : ""} ${attrs}>${esc(value)}</textarea>`;
+    control = `<textarea class="ma-input ma-textarea" id="${id}" name="${id}" rows="${rows ?? 4}" ${required ? "required" : ""} ${attrs}>${esc(value)}</textarea>`;
   } else {
-    control = `<input class="adm-input" id="${id}" name="${id}" type="${type}" value="${esc(value)}" ${required ? "required" : ""} ${attrs}>`;
+    control = `<input class="ma-input" id="${id}" name="${id}" type="${type}" value="${esc(value)}" ${required ? "required" : ""} ${attrs}>`;
   }
-  return `<div class="adm-field" data-field="${id}">
-    <label for="${id}">${esc(label)}${required ? ' <span aria-hidden="true" style="color:var(--danger)">*</span>' : ""}</label>
+  return `<div class="ma-field" data-field="${id}">
+    <label class="ma-label" for="${id}">${esc(label)}${required ? ' <span aria-hidden="true" class="ma-muted">*</span>' : ""}</label>
     ${control}
-    ${hint ? `<span class="adm-field__hint">${esc(hint)}</span>` : ""}
-    <span class="adm-field__error" hidden></span>
+    ${hint ? `<span class="ma-help">${esc(hint)}</span>` : ""}
+    <span class="ma-help ma-help--error" hidden></span>
   </div>`;
 }
 
 export function toast(message, ic = "check") {
   const root = document.getElementById("toast-root");
   const el = document.createElement("div");
-  el.className = "adm-toast";
+  el.className = "ma-toast";
   el.innerHTML = `${icon(ic)}<span>${esc(message)}</span>`;
   root.append(el);
   setTimeout(() => el.remove(), 3600);
@@ -122,8 +128,8 @@ function overlay(kind, { title, body, foot = "", onMount, wide = false }) {
   const root = document.getElementById("overlay-root");
   const opener = document.activeElement;
   const wrap = document.createElement("div");
-  wrap.className = "adm-backdrop";
-  const cls = kind === "drawer" ? "adm-drawer" : "adm-modal";
+  wrap.className = "ma-backdrop";
+  const cls = kind === "drawer" ? "ma-drawer" : "ma-modal";
   wrap.innerHTML = `<div class="${cls}" role="dialog" aria-modal="true" aria-labelledby="ov-title" ${wide ? 'style="width:min(720px,100vw)"' : ""}>
     <div class="${cls}__head"><h2 id="ov-title">${esc(title)}</h2>${iconBtn("x", tr("إغلاق", "Close"), 'data-close')}</div>
     <div class="${cls}__body">${body}</div>
@@ -189,8 +195,8 @@ export function validate(root, rules) {
     const input = root.querySelector(`#${id}`);
     if (!wrap || !input) continue;
     const msg = check(input.value.trim());
-    const err = wrap.querySelector(".adm-field__error");
-    wrap.classList.toggle("is-invalid", !!msg);
+    const err = wrap.querySelector(".ma-help--error");
+    wrap.classList.toggle("is-error", !!msg);
     input.setAttribute("aria-invalid", msg ? "true" : "false");
     err.hidden = !msg;
     err.textContent = msg || "";

@@ -21,8 +21,8 @@ export function areaChart(series, { height = 240, compare, label = "" } = {}) {
   const step = Math.ceil(series.length / 6);
   // Time axes stay left-to-right in both languages, like the numbers on them.
 
-  return `<div class="adm-chart-box" data-chart style="direction:ltr">
-    <svg class="adm-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}" style="direction:ltr">
+  return `<div class="ma-chart-box" data-chart style="direction:ltr">
+    <svg class="ma-chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)}" style="direction:ltr">
       ${ticks.map((t) => `<line class="grid" x1="${pad.l}" x2="${W - pad.r}" y1="${y(t)}" y2="${y(t)}"/><text x="${pad.l - 6}" y="${y(t) + 4}" text-anchor="end">${fmtCompact(t)}</text>`).join("")}
       ${series.map((d, i) => (i % step === 0 ? `<text x="${x(i)}" y="${H - 8}" text-anchor="middle">${fmtDate(d.date).replace(/,? \d{4}$/, "").replace(/ \d{4}$/, "")}</text>` : "")).join("")}
       ${compare ? `<path class="line2" d="${path(compare)}"/>` : ""}
@@ -31,7 +31,7 @@ export function areaChart(series, { height = 240, compare, label = "" } = {}) {
       ${series.map((d, i) => `<rect class="hit" x="${x(i) - (W / series.length) / 2}" y="${pad.t}" width="${W / series.length}" height="${H - pad.t - pad.b}" data-i="${i}"/>`).join("")}
       <circle class="dot" r="4" cx="0" cy="0" opacity="0" data-dot/>
     </svg>
-    <div class="adm-chart-tip" dir="auto" hidden></div>
+    <div class="ma-chart-tip" dir="auto" hidden></div>
   </div>`;
 }
 
@@ -40,7 +40,7 @@ export function wireCharts(root, seriesById) {
     const series = seriesById[idx];
     if (!series) return;
     const svg = box.querySelector("svg");
-    const tip = box.querySelector(".adm-chart-tip");
+    const tip = box.querySelector(".ma-chart-tip");
     const dot = box.querySelector("[data-dot]");
     svg.addEventListener("mousemove", (e) => {
       const r = e.target.closest("[data-i]");

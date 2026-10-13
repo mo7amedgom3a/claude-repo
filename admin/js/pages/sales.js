@@ -22,20 +22,20 @@ export function salesOverviewPage() {
       const byGw = Object.keys(GATEWAY_LABEL).map((g, i) => ({ g, value: paid.filter((o) => o.gateway === g).reduce((a, o) => a + o.total, 0), color: COLORS[i % COLORS.length] })).filter((x) => x.value);
       const abandoned = orders.filter((o) => o.status === "pending");
       el.innerHTML = `${pageHead({ title: tr("نظرة عامة على المبيعات", "Sales overview"), actions: rangeSelect(days) + btn(tr("تقرير المبيعات", "Sales report"), { href: "/analytics/sales", ic: "chart" }) })}
-        <div class="adm-grid adm-grid--3">
+        <div class="ma-cols ma-cols--3">
           ${kpi({ label: tr("الإيرادات", "Revenue"), value: esc(fmtMoney(s.revenue)), delta: s.dRevenue, field: "var(--coral)" })}
           ${kpi({ label: tr("الطلبات المدفوعة", "Paid orders"), value: fmtNum(s.orders), delta: s.dOrders })}
           ${kpi({ label: tr("سلات غير مكتملة", "Abandoned checkouts"), value: fmtNum(abandoned.length), meta: `<a href="#/sales/orders?view=abandoned">${esc(tr("عرضها", "View them"))}</a>` })}
         </div>
-        <div class="adm-grid adm-grid--main-side adm-section-gap">
+        <div class="ma-cols ma-cols--main-side ma-section-gap">
           ${card(tr("الإيرادات اليومية", "Daily revenue"), areaChart(s.cur, { label: tr("الإيرادات اليومية", "Daily revenue") }))}
           ${card(
             tr("حسب وسيلة الدفع", "By payment method"),
-            `<div class="adm-row" style="justify-content:center">${donut(byGw.map((x) => ({ value: x.value, color: x.color })))}</div>
-            <ul class="adm-list">${byGw.map((x) => `<li><span class="adm-tag" style="background:${x.color}">&nbsp;</span><span class="adm-list__main">${gateway(x.g)}</span>${money(x.value)}</li>`).join("")}</ul>`,
+            `<div class="ma-cluster" style="justify-content:center">${donut(byGw.map((x) => ({ value: x.value, color: x.color })))}</div>
+            <ul class="ma-list">${byGw.map((x) => `<li><span class="ma-tag" style="background:${x.color}">&nbsp;</span><span class="ma-list__main">${gateway(x.g)}</span>${money(x.value)}</li>`).join("")}</ul>`,
           )}
         </div>
-        <div class="adm-section-gap">${card(tr("آخر الاستردادات", "Recent refunds"), refundRows(refunds.slice(0, 5)), { flush: true, actions: btn(tr("كل الاستردادات", "All refunds"), { href: "/sales/refunds", sm: true }) })}</div>`;
+        <div class="ma-section-gap">${card(tr("آخر الاستردادات", "Recent refunds"), refundRows(refunds.slice(0, 5)), { flush: true, actions: btn(tr("كل الاستردادات", "All refunds"), { href: "/sales/refunds", sm: true }) })}</div>`;
       wireCharts(el, [s.cur]);
       el.querySelector("[data-range]").addEventListener("change", (e) => {
         save("salesRange", Number(e.target.value));
@@ -46,8 +46,8 @@ export function salesOverviewPage() {
 }
 
 function refundRows(list) {
-  return `<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>${esc(tr("الطلب", "Order"))}</th><th>${esc(tr("السبب", "Reason"))}</th><th>${esc(tr("طلبه", "Requested by"))}</th><th class="is-num">${esc(tr("المبلغ", "Amount"))}</th><th>${esc(tr("الحالة", "Status"))}</th></tr></thead>
-  <tbody>${list.map((r) => `<tr><td><a class="adm-cell-main" href="#/sales/orders/${r.orderId}">⁦#ORD-${r.orderId}⁩</a><span class="adm-cell-sub">${date(r.requestedAt)}</span></td><td>${esc(tr(r.reason))}</td><td>${esc(tr(r.requestedBy))}</td><td class="is-num">${money(r.amount)}</td><td>${badge(REFUND_STATUS[r.status])}</td></tr>`).join("")}</tbody></table></div>`;
+  return `<div class="ma-table-wrap"><table class="ma-table"><thead><tr><th>${esc(tr("الطلب", "Order"))}</th><th>${esc(tr("السبب", "Reason"))}</th><th>${esc(tr("طلبه", "Requested by"))}</th><th class="is-num">${esc(tr("المبلغ", "Amount"))}</th><th>${esc(tr("الحالة", "Status"))}</th></tr></thead>
+  <tbody>${list.map((r) => `<tr><td><a class="ma-cell-main" href="#/sales/orders/${r.orderId}">⁦#ORD-${r.orderId}⁩</a><span class="ma-cell-sub">${date(r.requestedAt)}</span></td><td>${esc(tr(r.reason))}</td><td>${esc(tr(r.requestedBy))}</td><td class="is-num">${money(r.amount)}</td><td>${badge(REFUND_STATUS[r.status])}</td></tr>`).join("")}</tbody></table></div>`;
 }
 
 /* ---------------- Orders ---------------- */
@@ -65,7 +65,7 @@ export function ordersPage() {
         search: (o) => `${o.number} ${o.id} ${tr(customerOf(o.customerId).name)} ${customerOf(o.customerId).email}`,
         searchPlaceholder: tr("رقم الطلب، اسم العميل، البريد…", "Order no., customer, email…"),
         columns: [
-          { key: "id", label: tr("الطلب", "Order"), sort: (o) => o.id, render: (o) => `<a class="adm-cell-main" href="#/sales/orders/${o.id}">⁦#${o.number}⁩</a><span class="adm-cell-sub">${date(o.createdAt, true)}</span>` },
+          { key: "id", label: tr("الطلب", "Order"), sort: (o) => o.id, render: (o) => `<a class="ma-cell-main" href="#/sales/orders/${o.id}">⁦#${o.number}⁩</a><span class="ma-cell-sub">${date(o.createdAt, true)}</span>` },
           { key: "customer", label: tr("العميل", "Customer"), render: (o) => customerCell(o.customerId) },
           { key: "items", label: tr("المنتجات", "Products"), render: orderItemsLabel },
           { key: "gateway", label: tr("الدفع", "Payment"), render: (o) => gateway(o.gateway) },
@@ -111,14 +111,14 @@ export function orderDetailPage({ id, tab = "overview" }) {
       ].join("");
       let body = "";
       if (tab === "overview") {
-        body = `<div class="adm-grid adm-grid--main-side">
-          <div class="adm-stack">
+        body = `<div class="ma-cols ma-cols--main-side">
+          <div class="ma-stack">
             ${card(tr("ملخص الطلب", "Order summary"), dl([
               [tr("التاريخ", "Date"), date(o.createdAt, true)],
-              [tr("الحالة", "Status"), orderStatus(o) + ` <span class="adm-muted" style="font-size:12px">(legacy status ${o.legacyStatus})</span>`],
+              [tr("الحالة", "Status"), orderStatus(o) + ` <span class="ma-muted" style="font-size:12px">(legacy status ${o.legacyStatus})</span>`],
               [tr("وسيلة الدفع", "Payment method"), gateway(o.gateway)],
               [tr("المجموع الفرعي", "Subtotal"), money(o.subtotal)],
-              [tr("الخصم", "Discount"), o.discount ? `− ${money(o.discount)} ${o.couponId ? `<a href="#/sales/coupons/${o.couponId}" class="adm-tag adm-tag--plain">${esc(byId(coupons, o.couponId).code)}</a>` : ""}` : "—"],
+              [tr("الخصم", "Discount"), o.discount ? `− ${money(o.discount)} ${o.couponId ? `<a href="#/sales/coupons/${o.couponId}" class="ma-tag ma-tag--soft">${esc(byId(coupons, o.couponId).code)}</a>` : ""}` : "—"],
               [tr("الإجمالي", "Total"), `<strong>${money(o.total)}</strong>`],
               [tr("رسوم البوابة", "Gateway fee"), money(o.fee)],
               [tr("الصافي", "Net"), money(o.total - o.fee)],
@@ -126,9 +126,9 @@ export function orderDetailPage({ id, tab = "overview" }) {
             ]))}
             ${card(tr("المنتجات", "Items"), itemsTable(o), { flush: true })}
           </div>
-          <div class="adm-stack">
-            ${card(tr("العميل", "Customer"), `${customerCell(c.id)}<div class="adm-section-gap">${dl([[tr("الجوال", "Phone"), `<span class="adm-ltr">${esc(c.phone)}</span>`], [tr("الطلبات", "Orders"), fmtNum(c.orders)], [tr("إجمالي الإنفاق", "Lifetime spend"), money(c.spent)]])}</div>`, { actions: btn(tr("ملف العميل", "Customer 360"), { href: `/customers/${c.id}`, sm: true }) })}
-            ${orderRefunds.length ? card(tr("الاستردادات", "Refunds"), `<ul class="adm-list">${orderRefunds.map((r) => `<li><div class="adm-list__main"><span class="adm-list__title">${money(r.amount)}</span><span class="adm-list__sub">${esc(tr(r.reason))}</span></div>${badge(REFUND_STATUS[r.status])}</li>`).join("")}</ul>`) : ""}
+          <div class="ma-stack">
+            ${card(tr("العميل", "Customer"), `${customerCell(c.id)}<div class="ma-section-gap">${dl([[tr("الجوال", "Phone"), `<span class="ma-ltr">${esc(c.phone)}</span>`], [tr("الطلبات", "Orders"), fmtNum(c.orders)], [tr("إجمالي الإنفاق", "Lifetime spend"), money(c.spent)]])}</div>`, { actions: btn(tr("ملف العميل", "Customer 360"), { href: `/customers/${c.id}`, sm: true }) })}
+            ${orderRefunds.length ? card(tr("الاستردادات", "Refunds"), `<ul class="ma-list">${orderRefunds.map((r) => `<li><div class="ma-list__main"><span class="ma-list__title">${money(r.amount)}</span><span class="ma-list__sub">${esc(tr(r.reason))}</span></div>${badge(REFUND_STATUS[r.status])}</li>`).join("")}</ul>`) : ""}
             ${o.status === "pending" ? alert("warning", tr("لم يكتمل الدفع", "Payment not completed"), esc(tr("العميل لم يكمل الدفع. يمكنك إرسال رابط دفع جديد.", "The customer didn't finish checkout. You can send a new payment link."))) : ""}
           </div>
         </div>`;
@@ -137,17 +137,17 @@ export function orderDetailPage({ id, tab = "overview" }) {
       } else if (tab === "payments") {
         body = card(
           tr("المعاملات", "Transactions"),
-          `<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>${esc(tr("المعرّف", "ID"))}</th><th>${esc(tr("النوع", "Type"))}</th><th>${esc(tr("البوابة", "Gateway"))}</th><th>${esc(tr("التاريخ", "Date"))}</th><th class="is-num">${esc(tr("المبلغ", "Amount"))}</th><th>${esc(tr("الحالة", "Status"))}</th></tr></thead><tbody>
-          <tr><td class="adm-ltr">pi_${o.id}A7x</td><td>${esc(tr("دفع", "Charge"))}</td><td>${gateway(o.gateway)}</td><td>${date(o.createdAt, true)}</td><td class="is-num">${money(o.total)}</td><td>${o.status === "pending" ? badge({ label: { ar: "لم يكتمل", en: "Incomplete" }, tone: "warning" }) : o.status === "failed" ? badge({ label: { ar: "مرفوض", en: "Declined" }, tone: "danger" }) : badge({ label: { ar: "ناجح", en: "Succeeded" }, tone: "success" })}</td></tr>
-          ${orderRefunds.map((r) => `<tr><td class="adm-ltr">re_${r.id}Kq2</td><td>${esc(tr("استرداد", "Refund"))}</td><td>${gateway(r.gateway)}</td><td>${date(r.requestedAt, true)}</td><td class="is-num">− ${money(r.amount)}</td><td>${badge(REFUND_STATUS[r.status])}</td></tr>`).join("")}
+          `<div class="ma-table-wrap"><table class="ma-table"><thead><tr><th>${esc(tr("المعرّف", "ID"))}</th><th>${esc(tr("النوع", "Type"))}</th><th>${esc(tr("البوابة", "Gateway"))}</th><th>${esc(tr("التاريخ", "Date"))}</th><th class="is-num">${esc(tr("المبلغ", "Amount"))}</th><th>${esc(tr("الحالة", "Status"))}</th></tr></thead><tbody>
+          <tr><td class="ma-ltr">pi_${o.id}A7x</td><td>${esc(tr("دفع", "Charge"))}</td><td>${gateway(o.gateway)}</td><td>${date(o.createdAt, true)}</td><td class="is-num">${money(o.total)}</td><td>${o.status === "pending" ? badge({ label: { ar: "لم يكتمل", en: "Incomplete" }, tone: "warning" }) : o.status === "failed" ? badge({ label: { ar: "مرفوض", en: "Declined" }, tone: "danger" }) : badge({ label: { ar: "ناجح", en: "Succeeded" }, tone: "success" })}</td></tr>
+          ${orderRefunds.map((r) => `<tr><td class="ma-ltr">re_${r.id}Kq2</td><td>${esc(tr("استرداد", "Refund"))}</td><td>${gateway(r.gateway)}</td><td>${date(r.requestedAt, true)}</td><td class="is-num">− ${money(r.amount)}</td><td>${badge(REFUND_STATUS[r.status])}</td></tr>`).join("")}
           </tbody></table></div>`,
           { flush: true },
         );
       } else {
-        body = card(tr("سجل النشاط", "Activity"), `<ol class="adm-timeline">
-          ${orderRefunds.map((r) => `<li><strong>${esc(tr("طلب استرداد", "Refund requested"))}</strong> ${money(r.amount)}<div class="adm-muted">${esc(tr(r.requestedBy))} · ${date(r.requestedAt, true)}</div></li>`).join("")}
-          ${o.status !== "pending" && o.status !== "failed" ? `<li><strong>${esc(tr("تم منح الوصول للمحتوى", "Access granted"))}</strong><div class="adm-muted">${esc(tr("النظام", "System"))} · ${date(o.createdAt, true)}</div></li><li><strong>${esc(tr("تم الدفع", "Payment captured"))}</strong><div class="adm-muted">${gateway(o.gateway)} · ${date(o.createdAt, true)}</div></li>` : ""}
-          <li><strong>${esc(tr("تم إنشاء الطلب", "Order created"))}</strong><div class="adm-muted">${esc(tr(c.name))} · ${date(o.createdAt, true)}</div></li>
+        body = card(tr("سجل النشاط", "Activity"), `<ol class="ma-timeline">
+          ${orderRefunds.map((r) => `<li><strong>${esc(tr("طلب استرداد", "Refund requested"))}</strong> ${money(r.amount)}<div class="ma-muted">${esc(tr(r.requestedBy))} · ${date(r.requestedAt, true)}</div></li>`).join("")}
+          ${o.status !== "pending" && o.status !== "failed" ? `<li><strong>${esc(tr("تم منح الوصول للمحتوى", "Access granted"))}</strong><div class="ma-muted">${esc(tr("النظام", "System"))} · ${date(o.createdAt, true)}</div></li><li><strong>${esc(tr("تم الدفع", "Payment captured"))}</strong><div class="ma-muted">${gateway(o.gateway)} · ${date(o.createdAt, true)}</div></li>` : ""}
+          <li><strong>${esc(tr("تم إنشاء الطلب", "Order created"))}</strong><div class="ma-muted">${esc(tr(c.name))} · ${date(o.createdAt, true)}</div></li>
         </ol>`);
       }
       el.innerHTML = `${pageHead({ title: `⁦#${o.number}⁩`, status: orderStatus(o), sub: `${esc(tr(c.name))} · ${date(o.createdAt, true)}`, actions, back: { href: "/sales/orders", label: tr("الطلبات", "Orders") } })}
@@ -157,7 +157,7 @@ export function orderDetailPage({ id, tab = "overview" }) {
       el.querySelector("[data-status]")?.addEventListener("click", () =>
         drawer({
           title: tr("تغيير حالة الطلب", "Change order status"),
-          body: `<div class="adm-form">${alert("info", tr("إجراء سريع", "Quick action"), esc(tr("للاسترداد استخدم «إصدار استرداد» حتى تُعالج البوابة المبلغ.", "For money back use Issue refund so the gateway processes it.")))}
+          body: `<div class="ma-form">${alert("info", tr("إجراء سريع", "Quick action"), esc(tr("للاسترداد استخدم «إصدار استرداد» حتى تُعالج البوابة المبلغ.", "For money back use Issue refund so the gateway processes it.")))}
             ${field({ id: "st", label: tr("الحالة الجديدة", "New status"), value: o.status, options: Object.entries(ORDER_STATUS).filter(([k]) => !k.includes("refund")).map(([k, v]) => [k, tr(v.label)]) })}
             ${field({ id: "note", label: tr("ملاحظة داخلية", "Internal note"), type: "textarea", hint: tr("تظهر في سجل النشاط وسجل التدقيق.", "Shown in the activity and audit logs.") })}</div>`,
           foot: `${btn(tr("إلغاء", "Cancel"), { attrs: "data-close" })}${btn(tr("حفظ الحالة", "Save status"), { kind: "primary", attrs: "data-save" })}`,
@@ -176,12 +176,12 @@ export function orderDetailPage({ id, tab = "overview" }) {
 }
 
 function itemsTable(o, access = false) {
-  return `<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>${esc(tr("المنتج", "Product"))}</th><th>${esc(tr("النوع", "Type"))}</th>${access ? `<th>${esc(tr("الوصول", "Access"))}</th>` : ""}<th class="is-num">${esc(tr("السعر", "Price"))}</th></tr></thead><tbody>
+  return `<div class="ma-table-wrap"><table class="ma-table"><thead><tr><th>${esc(tr("المنتج", "Product"))}</th><th>${esc(tr("النوع", "Type"))}</th>${access ? `<th>${esc(tr("الوصول", "Access"))}</th>` : ""}<th class="is-num">${esc(tr("السعر", "Price"))}</th></tr></thead><tbody>
     ${o.items
       .map((i) => {
         const href = i.productType === 1 ? `/learning/courses/${i.productId}` : i.productType === 6 ? `/learning/packages/${i.productId}` : "/learning/consultations";
         const acc = o.status === "paid" || o.status === "partially_refunded" ? badge({ label: { ar: "مفعل حتى 12/2027", en: "Active until 12/2027" }, tone: "success" }) : o.status === "refunded" ? badge({ label: { ar: "أُلغي", en: "Revoked" }, tone: "neutral" }) : "—";
-        return `<tr><td><a class="adm-cell-main" href="#${href}">${esc(tr(i.title))}</a></td><td>${esc(tr(PRODUCT_TYPE[i.productType]))}</td>${access ? `<td>${acc}</td>` : ""}<td class="is-num">${money(i.price)}</td></tr>`;
+        return `<tr><td><a class="ma-cell-main" href="#${href}">${esc(tr(i.title))}</a></td><td>${esc(tr(PRODUCT_TYPE[i.productType]))}</td>${access ? `<td>${acc}</td>` : ""}<td class="is-num">${money(i.price)}</td></tr>`;
       })
       .join("")}
   </tbody></table></div>`;
@@ -209,14 +209,14 @@ export function refundPage({ id }) {
             key: "amount",
             label: tr("المبلغ", "Amount"),
             render: (d) => `
-              <fieldset class="adm-form" style="border:0;padding:0;margin:0"><legend class="adm-label">${esc(tr("نوع الاسترداد", "Refund type"))}</legend>
-                <label class="adm-check"><input type="radio" name="kind" value="full" ${d.kind === "full" ? "checked" : ""}> ${esc(tr("كامل", "Full"))} (${esc(fmtMoney(o.total))})</label>
-                <label class="adm-check"><input type="radio" name="kind" value="partial" ${d.kind === "partial" ? "checked" : ""}> ${esc(tr("جزئي", "Partial"))}</label>
+              <fieldset class="ma-form" style="border:0;padding:0;margin:0"><legend class="ma-label">${esc(tr("نوع الاسترداد", "Refund type"))}</legend>
+                <label class="ma-check"><input type="radio" name="kind" value="full" ${d.kind === "full" ? "checked" : ""}> ${esc(tr("كامل", "Full"))} (${esc(fmtMoney(o.total))})</label>
+                <label class="ma-check"><input type="radio" name="kind" value="partial" ${d.kind === "partial" ? "checked" : ""}> ${esc(tr("جزئي", "Partial"))}</label>
               </fieldset>
               ${field({ id: "amount", label: tr("المبلغ المسترد (ر.س)", "Refund amount (SAR)"), type: "number", value: d.amount, required: true, hint: tr(`الحد الأقصى ${fmtMoney(o.total)}`, `Maximum ${fmtMoney(o.total)}`), attrs: `min="1" max="${o.total}" inputmode="decimal"` })}
               ${field({ id: "reason", label: tr("السبب", "Reason"), value: d.reason, options: [["customer", tr("طلب العميل", "Customer request")], ["duplicate", tr("دفع مكرر", "Duplicate payment")], ["technical", tr("مشكلة تقنية", "Technical issue")], ["other", tr("أخرى", "Other")]] })}
               ${field({ id: "note", label: tr("ملاحظة داخلية", "Internal note"), type: "textarea", value: d.note ?? "" })}
-              <label class="adm-check"><input type="checkbox" name="revoke" ${d.revoke ? "checked" : ""}> ${esc(tr("إلغاء وصول العميل إلى المحتوى المرتبط", "Revoke the customer's access to related content"))}</label>`,
+              <label class="ma-check"><input type="checkbox" name="revoke" ${d.revoke ? "checked" : ""}> ${esc(tr("إلغاء وصول العميل إلى المحتوى المرتبط", "Revoke the customer's access to related content"))}</label>`,
             mount(form) {
               const amt = form.querySelector("#amount");
               form.querySelectorAll('[name="kind"]').forEach((r) => r.addEventListener("change", () => r.value === "full" && r.checked && (amt.value = o.total)));
@@ -247,12 +247,12 @@ export function refundPage({ id }) {
             final: true,
             render: (d) => `
               ${alert("success", approve ? tr("تم إرسال طلب الاسترداد إلى البوابة", "Refund request sent to the gateway") : tr("أُرسل طلب الاسترداد للموافقة", "Refund sent for approval"), esc(tr("إرسال الطلب لا يعني اكتمال الاسترداد. سنحدّث الحالة عند تأكيد البوابة.", "Sending the request is not the same as the money arriving. We'll update the status when the gateway confirms.")), "check")}
-              <ol class="adm-timeline adm-section-gap">
+              <ol class="ma-timeline ma-section-gap">
                 <li><strong>${esc(tr("تم الطلب", "Requested"))}</strong> · ${money(Number(d.amount))}</li>
                 <li><strong>${esc(approve ? tr("أُرسل إلى البوابة", "Sent to gateway") : tr("بانتظار الموافقة", "Awaiting approval"))}</strong></li>
-                <li class="adm-muted">${esc(tr("تأكيد البوابة — قيد الانتظار", "Gateway confirmation — pending"))}</li>
+                <li class="ma-muted">${esc(tr("تأكيد البوابة — قيد الانتظار", "Gateway confirmation — pending"))}</li>
               </ol>
-              <div class="adm-row adm-section-gap">${btn(tr("العودة للطلب", "Back to order"), { href: `/sales/orders/${o.id}`, kind: "ink" })}${btn(tr("كل الاستردادات", "All refunds"), { href: "/sales/refunds" })}</div>`,
+              <div class="ma-cluster ma-section-gap">${btn(tr("العودة للطلب", "Back to order"), { href: `/sales/orders/${o.id}`, kind: "ink" })}${btn(tr("كل الاستردادات", "All refunds"), { href: "/sales/refunds" })}</div>`,
           },
         ],
         onSubmit(d) {
@@ -277,7 +277,7 @@ export function paymentsPage() {
         rowHref: (o) => `/sales/orders/${o.id}/payments`,
         search: (o) => `${o.number} pi_${o.id}`,
         columns: [
-          { key: "tx", label: tr("المعاملة", "Transaction"), render: (o) => `<span class="adm-ltr adm-cell-main">pi_${o.id}A7x</span><span class="adm-cell-sub">${date(o.createdAt, true)}</span>` },
+          { key: "tx", label: tr("المعاملة", "Transaction"), render: (o) => `<span class="ma-ltr ma-cell-main">pi_${o.id}A7x</span><span class="ma-cell-sub">${date(o.createdAt, true)}</span>` },
           { key: "order", label: tr("الطلب", "Order"), render: (o) => `<a href="#/sales/orders/${o.id}">⁦#${o.number}⁩</a>` },
           { key: "gw", label: tr("البوابة", "Gateway"), render: (o) => gateway(o.gateway) },
           { key: "amount", label: tr("المبلغ", "Amount"), num: true, sort: (o) => o.total, render: (o) => money(o.total) },
@@ -304,7 +304,7 @@ export function refundsPage() {
           rowHref: (r) => `/sales/orders/${r.orderId}`,
           search: (r) => `ORD-${r.orderId}`,
           columns: [
-            { key: "order", label: tr("الطلب", "Order"), render: (r) => `<a class="adm-cell-main" href="#/sales/orders/${r.orderId}">⁦#ORD-${r.orderId}⁩</a><span class="adm-cell-sub">${date(r.requestedAt)}</span>` },
+            { key: "order", label: tr("الطلب", "Order"), render: (r) => `<a class="ma-cell-main" href="#/sales/orders/${r.orderId}">⁦#ORD-${r.orderId}⁩</a><span class="ma-cell-sub">${date(r.requestedAt)}</span>` },
             { key: "reason", label: tr("السبب", "Reason"), render: (r) => esc(tr(r.reason)) },
             { key: "by", label: tr("طلبه", "Requested by"), render: (r) => esc(tr(r.requestedBy)) },
             { key: "gw", label: tr("البوابة", "Gateway"), render: (r) => gateway(r.gateway) },
@@ -347,7 +347,7 @@ export function invoicesPage() {
         rows,
         search: (o) => `INV-${o.id} ${o.number}`,
         columns: [
-          { key: "inv", label: tr("الفاتورة", "Invoice"), render: (o) => `<span class="adm-cell-main adm-ltr">INV-2026-${o.id}</span>` },
+          { key: "inv", label: tr("الفاتورة", "Invoice"), render: (o) => `<span class="ma-cell-main ma-ltr">INV-2026-${o.id}</span>` },
           { key: "order", label: tr("الطلب", "Order"), render: (o) => `<a href="#/sales/orders/${o.id}">⁦#${o.number}⁩</a>` },
           { key: "cust", label: tr("العميل", "Customer"), render: (o) => customerCell(o.customerId) },
           { key: "date", label: tr("التاريخ", "Date"), sort: (o) => o.createdAt, render: (o) => date(o.createdAt) },
@@ -384,7 +384,7 @@ export function couponsPage() {
         search: (c) => c.code,
         searchPlaceholder: tr("رمز الكوبون…", "Coupon code…"),
         columns: [
-          { key: "code", label: tr("الرمز", "Code"), sort: (c) => c.code, render: (c) => `<a class="adm-cell-main adm-ltr" href="#/sales/coupons/${c.id}">${esc(c.code)}</a>` },
+          { key: "code", label: tr("الرمز", "Code"), sort: (c) => c.code, render: (c) => `<a class="ma-cell-main ma-ltr" href="#/sales/coupons/${c.id}">${esc(c.code)}</a>` },
           { key: "pct", label: tr("الخصم", "Discount"), num: true, sort: (c) => c.percent, render: (c) => `${fmtNum(c.percent)}%` },
           { key: "reason", label: tr("السبب", "Reason"), render: (c) => couponReason(c.reason) },
           { key: "scope", label: tr("النطاق", "Scope"), render: (c) => esc(tr(SCOPE[c.scope])) },
@@ -415,8 +415,8 @@ export function couponDetailPage({ id, tab = "overview" }) {
     render(el) {
       let body;
       if (tab === "overview") {
-        body = `<div class="adm-grid adm-grid--3">${kpi({ label: tr("مرات الاستخدام", "Times used"), value: fmtNum(c.used), field: "var(--yellow)" })}${kpi({ label: tr("إجمالي الخصم", "Total discount"), value: esc(fmtMoney(used.reduce((s, o) => s + o.discount, 0) + c.used * 37)) })}${kpi({ label: tr("إيرادات الطلبات", "Order revenue"), value: esc(fmtMoney(used.reduce((s, o) => s + o.total, 0) + c.used * 210)) })}</div>
-        <div class="adm-section-gap">${card(tr("الشروط", "Conditions"), dl([
+        body = `<div class="ma-cols ma-cols--3">${kpi({ label: tr("مرات الاستخدام", "Times used"), value: fmtNum(c.used), field: "var(--yellow)" })}${kpi({ label: tr("إجمالي الخصم", "Total discount"), value: esc(fmtMoney(used.reduce((s, o) => s + o.discount, 0) + c.used * 37)) })}${kpi({ label: tr("إيرادات الطلبات", "Order revenue"), value: esc(fmtMoney(used.reduce((s, o) => s + o.total, 0) + c.used * 210)) })}</div>
+        <div class="ma-section-gap">${card(tr("الشروط", "Conditions"), dl([
           [tr("الخصم", "Discount"), `${fmtNum(c.percent)}%`],
           [tr("السبب", "Reason"), couponReason(c.reason)],
           [tr("يبدأ", "Starts"), date(c.startsAt)],
@@ -428,9 +428,9 @@ export function couponDetailPage({ id, tab = "overview" }) {
         ]))}</div>`;
       } else if (tab === "scope") {
         const list = c.scope === "category" ? categories.slice(0, 2).map((x) => tr(x.name)) : c.scope === "course" ? courses.slice(c.id % 10, (c.id % 10) + 4).map((x) => tr(x.title)) : c.scope === "package" ? packages.slice(0, 2).map((x) => tr(x.title)) : [];
-        body = card(tr("ينطبق على", "Applies to"), list.length ? `<ul class="adm-list">${list.map((x) => `<li>${icon("tag")}<span class="adm-list__main">${esc(x)}</span></li>`).join("")}</ul>` : `<p>${esc(tr("كل المنتجات", "All products"))}</p>`, { actions: can("coupons.update") ? btn(tr("تعديل النطاق", "Edit scope"), { sm: true }) : "" });
+        body = card(tr("ينطبق على", "Applies to"), list.length ? `<ul class="ma-list">${list.map((x) => `<li>${icon("tag")}<span class="ma-list__main">${esc(x)}</span></li>`).join("")}</ul>` : `<p>${esc(tr("كل المنتجات", "All products"))}</p>`, { actions: can("coupons.update") ? btn(tr("تعديل النطاق", "Edit scope"), { sm: true }) : "" });
       } else {
-        body = card(tr("الطلبات التي استخدمته", "Orders that used it"), used.length ? `<div class="adm-table-wrap"><table class="adm-table"><thead><tr><th>${esc(tr("الطلب", "Order"))}</th><th>${esc(tr("العميل", "Customer"))}</th><th class="is-num">${esc(tr("الخصم", "Discount"))}</th><th class="is-num">${esc(tr("الإجمالي", "Total"))}</th></tr></thead><tbody>${used.map((o) => `<tr><td><a href="#/sales/orders/${o.id}">⁦#${o.number}⁩</a></td><td>${customerCell(o.customerId)}</td><td class="is-num">${money(o.discount)}</td><td class="is-num">${money(o.total)}</td></tr>`).join("")}</tbody></table></div>` : empty(tr("لا توجد طلبات في هذه العينة", "No orders in this sample")), { flush: true });
+        body = card(tr("الطلبات التي استخدمته", "Orders that used it"), used.length ? `<div class="ma-table-wrap"><table class="ma-table"><thead><tr><th>${esc(tr("الطلب", "Order"))}</th><th>${esc(tr("العميل", "Customer"))}</th><th class="is-num">${esc(tr("الخصم", "Discount"))}</th><th class="is-num">${esc(tr("الإجمالي", "Total"))}</th></tr></thead><tbody>${used.map((o) => `<tr><td><a href="#/sales/orders/${o.id}">⁦#${o.number}⁩</a></td><td>${customerCell(o.customerId)}</td><td class="is-num">${money(o.discount)}</td><td class="is-num">${money(o.total)}</td></tr>`).join("")}</tbody></table></div>` : empty(tr("لا توجد طلبات في هذه العينة", "No orders in this sample")), { flush: true });
       }
       el.innerHTML = `${pageHead({ title: c.code, status: couponState(c), sub: esc(tr(`خصم ${c.percent}%`, `${c.percent}% off`)), back: { href: "/sales/coupons", label: tr("الكوبونات", "Coupons") }, actions: can("coupons.update") ? btn(c.active ? tr("إيقاف", "Disable") : tr("تفعيل", "Enable"), { attrs: "data-toggle" }) + btn(tr("نسخ", "Duplicate"), { ic: "copy" }) : "" })}
         ${tabs(base, [["overview", tr("نظرة عامة", "Overview")], ["scope", tr("النطاق", "Scope")], ["usage", tr("الاستخدام", "Usage")]], tab)}${body}`;
@@ -459,7 +459,7 @@ export function couponNewPage() {
           {
             key: "basics",
             label: tr("الأساسيات", "Basics"),
-            render: (d) => `<div class="adm-form-grid">
+            render: (d) => `<div class="ma-form-grid">
               ${field({ id: "code", label: tr("الرمز", "Code"), value: d.code ?? "", required: true, hint: tr("أحرف إنجليزية وأرقام، بدون مسافات.", "Latin letters and digits, no spaces."), attrs: 'dir="ltr" autocomplete="off"' })}
               ${field({ id: "percent", label: tr("نسبة الخصم %", "Discount %"), type: "number", value: d.percent, required: true, attrs: 'min="1" max="100"' })}
               ${field({ id: "reason", label: tr("السبب", "Reason"), value: d.reason, options: Object.entries(COUPON_REASON).filter(([, v]) => v.confirmed).map(([k, v]) => [k, tr(v.label)]) })}
@@ -473,7 +473,7 @@ export function couponNewPage() {
           {
             key: "conditions",
             label: tr("الشروط", "Conditions"),
-            render: (d) => `<div class="adm-form-grid">
+            render: (d) => `<div class="ma-form-grid">
               ${field({ id: "startsAt", label: tr("يبدأ", "Starts"), type: "date", value: d.startsAt ?? "2026-10-13", required: true })}
               ${field({ id: "endsAt", label: tr("ينتهي", "Ends"), type: "date", value: d.endsAt ?? "", required: true })}
               ${field({ id: "minTotal", label: tr("الحد الأدنى للطلب", "Minimum order"), type: "number", value: d.minTotal ?? "" })}
@@ -486,8 +486,8 @@ export function couponNewPage() {
             key: "scope",
             label: tr("النطاق", "Scope"),
             render: (d) => `${field({ id: "scope", label: tr("ينطبق على", "Applies to"), value: d.scope, options: Object.entries(SCOPE).map(([k, v]) => [k, tr(v)]) })}
-              <fieldset style="border:0;padding:0;margin:0" data-courses ${d.scope === "course" ? "" : "hidden"}><legend class="adm-label">${esc(tr("اختر الدورات", "Choose courses"))}</legend>
-              ${courses.slice(0, 8).map((c) => `<label class="adm-check"><input type="checkbox" data-multi="1" name="courseIds" value="${c.id}" ${(d.courseIds ?? []).includes(String(c.id)) ? "checked" : ""}> ${esc(tr(c.title))}</label>`).join("")}</fieldset>`,
+              <fieldset style="border:0;padding:0;margin:0" data-courses ${d.scope === "course" ? "" : "hidden"}><legend class="ma-label">${esc(tr("اختر الدورات", "Choose courses"))}</legend>
+              ${courses.slice(0, 8).map((c) => `<label class="ma-check"><input type="checkbox" data-multi="1" name="courseIds" value="${c.id}" ${(d.courseIds ?? []).includes(String(c.id)) ? "checked" : ""}> ${esc(tr(c.title))}</label>`).join("")}</fieldset>`,
             mount(f) {
               f.querySelector("#scope").addEventListener("change", (e) => (f.querySelector("[data-courses]").hidden = e.target.value !== "course"));
             },
@@ -496,7 +496,7 @@ export function couponNewPage() {
             key: "review",
             label: tr("المراجعة", "Review"),
             render: (d) => dl([
-              [tr("الرمز", "Code"), `<strong class="adm-ltr">${esc(d.code)}</strong>`],
+              [tr("الرمز", "Code"), `<strong class="ma-ltr">${esc(d.code)}</strong>`],
               [tr("الخصم", "Discount"), `${esc(d.percent)}%`],
               [tr("الصلاحية", "Valid"), `${esc(d.startsAt)} → ${esc(d.endsAt)}`],
               [tr("النطاق", "Scope"), esc(tr(SCOPE[d.scope]))],
@@ -527,7 +527,7 @@ export function priceListsPage() {
         rows: priceLists,
         views: false,
         columns: [
-          { key: "n", label: tr("الاسم", "Name"), render: (p) => `<span class="adm-cell-main">${esc(tr(p.name))}</span>` },
+          { key: "n", label: tr("الاسم", "Name"), render: (p) => `<span class="ma-cell-main">${esc(tr(p.name))}</span>` },
           { key: "c", label: tr("الدورات", "Courses"), num: true, render: (p) => fmtNum(p.courses) },
           { key: "d", label: tr("الخصم", "Discount"), num: true, render: (p) => `${p.discount}%` },
           { key: "w", label: tr("الفترة", "Window"), render: (p) => `${date(p.startsAt)} – ${date(p.endsAt)}` },
@@ -538,7 +538,7 @@ export function priceListsPage() {
       el.querySelector("[data-new]")?.addEventListener("click", () =>
         drawer({
           title: tr("قائمة أسعار جديدة", "New price list"),
-          body: `<div class="adm-form">${field({ id: "pl", label: tr("الاسم", "Name"), required: true })}${field({ id: "pd", label: tr("الخصم %", "Discount %"), type: "number", value: "20" })}<div class="adm-form-grid">${field({ id: "ps", label: tr("يبدأ", "Starts"), type: "date" })}${field({ id: "pe", label: tr("ينتهي", "Ends"), type: "date" })}</div></div>`,
+          body: `<div class="ma-form">${field({ id: "pl", label: tr("الاسم", "Name"), required: true })}${field({ id: "pd", label: tr("الخصم %", "Discount %"), type: "number", value: "20" })}<div class="ma-form-grid">${field({ id: "ps", label: tr("يبدأ", "Starts"), type: "date" })}${field({ id: "pe", label: tr("ينتهي", "Ends"), type: "date" })}</div></div>`,
           foot: `${btn(tr("إلغاء", "Cancel"), { attrs: "data-close" })}${btn(tr("حفظ كمسودة", "Save as draft"), { kind: "primary", attrs: "data-close" })}`,
         }),
       );
@@ -551,9 +551,9 @@ export function offersPage() {
     title: tr("العروض", "Offers"),
     render(el) {
       el.innerHTML = `${pageHead({ title: tr("العروض", "Offers"), sub: esc(tr("قواعد خصم تلقائية في السلة، بدون رمز.", "Automatic cart rules, no code needed.")), actions: can("pricing.create") ? btn(tr("عرض جديد", "New offer"), { kind: "primary", ic: "plus" }) : "" })}
-        <div class="adm-grid adm-grid--2">${offers
-          .map((o, i) => `<section class="adm-card"><div class="adm-card__head"><span class="adm-tag" style="background:${COLORS[i]}">${esc(tr(OFFER_TYPE[o.type]))}</span><span class="adm-spacer"></span>${onOff(o.active)}</div>
-            <h2 style="font-size:20px">${esc(tr(o.name))}</h2><p class="adm-muted">${fmtNum(o.uses)} ${esc(tr("استخدام", "uses"))}</p></section>`)
+        <div class="ma-cols ma-cols--2">${offers
+          .map((o, i) => `<section class="ma-panel"><div class="ma-panel__head"><span class="ma-tag" style="background:${COLORS[i]}">${esc(tr(OFFER_TYPE[o.type]))}</span><span class="ma-spacer"></span>${onOff(o.active)}</div>
+            <h2 style="font-size:20px">${esc(tr(o.name))}</h2><p class="ma-muted">${fmtNum(o.uses)} ${esc(tr("استخدام", "uses"))}</p></section>`)
           .join("")}</div>`;
     },
   };

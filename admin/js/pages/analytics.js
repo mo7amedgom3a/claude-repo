@@ -10,20 +10,20 @@ function template(el, { title, sub, kpis, chart, side, table }) {
   el.innerHTML = `${pageHead({
     title,
     sub: esc(sub),
-    actions: `<label class="adm-sr" for="rf">${esc(tr("من", "From"))}</label><input id="rf" class="adm-input" type="date" style="width:auto" value="${load("reportFrom", "2026-09-13")}" data-from>
-      <label class="adm-sr" for="rt">${esc(tr("إلى", "To"))}</label><input id="rt" class="adm-input" type="date" style="width:auto" value="${load("reportTo", "2026-10-13")}" data-to>
+    actions: `<label class="ma-sr" for="rf">${esc(tr("من", "From"))}</label><input id="rf" class="ma-input" type="date" style="width:auto" value="${load("reportFrom", "2026-09-13")}" data-from>
+      <label class="ma-sr" for="rt">${esc(tr("إلى", "To"))}</label><input id="rt" class="ma-input" type="date" style="width:auto" value="${load("reportTo", "2026-10-13")}" data-to>
       ${btn(tr("تصدير", "Export"), { ic: "download", attrs: "data-export" })}`,
   })}
-  <div class="adm-grid adm-grid--3">${kpis.join("")}</div>
-  ${chart || side ? `<div class="adm-grid ${chart && side ? "adm-grid--main-side" : ""} adm-section-gap">${chart ?? ""}${side ?? ""}</div>` : ""}
-  <div class="adm-section-gap">${table}</div>`;
+  <div class="ma-cols ma-cols--3">${kpis.join("")}</div>
+  ${chart || side ? `<div class="ma-cols ${chart && side ? "ma-cols--main-side" : ""} ma-section-gap">${chart ?? ""}${side ?? ""}</div>` : ""}
+  <div class="ma-section-gap">${table}</div>`;
   el.querySelector("[data-from]").addEventListener("change", (e) => save("reportFrom", e.target.value));
   el.querySelector("[data-to]").addEventListener("change", (e) => save("reportTo", e.target.value));
   el.querySelector("[data-export]").addEventListener("click", () => toast(tr("يتم تجهيز التقرير وسيصلك بالبريد", "Report is being prepared; we'll email it to you"), "download"));
 }
 
 function simpleTable(head, rows) {
-  return `<div class="adm-table-wrap"><table class="adm-table"><thead><tr>${head.map((h) => `<th class="${h.num ? "is-num" : ""}">${esc(h.l)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c, i) => `<td class="${head[i].num ? "is-num" : ""}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
+  return `<div class="ma-table-wrap"><table class="ma-table"><thead><tr>${head.map((h) => `<th class="${h.num ? "is-num" : ""}">${esc(h.l)}</th>`).join("")}</tr></thead><tbody>${rows.map((r) => `<tr>${r.map((c, i) => `<td class="${head[i].num ? "is-num" : ""}">${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>`;
 }
 
 const REPORTS = {
@@ -74,7 +74,7 @@ const REPORTS = {
         sub: this.sub,
         kpis: [kpi({ label: tr("كوبونات مستخدمة", "Coupons used"), value: fmtNum(3777), field: "var(--pink)" }), kpi({ label: tr("إجمالي الخصم", "Total discount"), value: esc(fmtMoney(184320)) }), kpi({ label: tr("متوسط الخصم", "Average discount"), value: "22%" })],
         side: card(tr("حسب السبب", "By reason"), bars(Object.entries(COUPON_REASON).slice(0, 3).map(([k, v], i) => ({ label: tr(v.label), value: coupons.filter((c) => String(c.reason) === k).reduce((s, c) => s + c.used, 0), color: COLORS[i] })), { fmt: fmtNum })),
-        table: card(tr("الأكثر استخدامًا", "Most used"), simpleTable([{ l: tr("الرمز", "Code") }, { l: tr("الخصم", "Discount"), num: true }, { l: tr("الاستخدام", "Uses"), num: true }], top.map((c) => [`<a class="adm-ltr" href="#/sales/coupons/${c.id}">${esc(c.code)}</a>`, `${c.percent}%`, fmtNum(c.used)])), { flush: true }),
+        table: card(tr("الأكثر استخدامًا", "Most used"), simpleTable([{ l: tr("الرمز", "Code") }, { l: tr("الخصم", "Discount"), num: true }, { l: tr("الاستخدام", "Uses"), num: true }], top.map((c) => [`<a class="ma-ltr" href="#/sales/coupons/${c.id}">${esc(c.code)}</a>`, `${c.percent}%`, fmtNum(c.used)])), { flush: true }),
       });
     },
   }),

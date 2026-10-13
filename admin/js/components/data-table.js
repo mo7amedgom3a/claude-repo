@@ -56,31 +56,31 @@ export function dataTable(el, cfg) {
     const bulk = cfg.bulk?.length;
     const allOnPage = pageRows.length && pageRows.every((r) => state.selected.has(r.id));
 
-    el.innerHTML = `<section class="adm-card adm-card--flush" aria-label="${esc(cfg.label ?? "")}">
-      ${cfg.views !== false ? `<div class="adm-views" role="group" aria-label="${esc(tr("طرق العرض المحفوظة", "Saved views"))}">
+    el.innerHTML = `<section class="ma-panel ma-panel--flush" aria-label="${esc(cfg.label ?? "")}">
+      ${cfg.views !== false ? `<div class="ma-views" role="group" aria-label="${esc(tr("طرق العرض المحفوظة", "Saved views"))}">
         ${allViews()
-          .map((v) => `<button type="button" class="adm-chip" data-view="${esc(v.id)}" aria-pressed="${v.id === state.view}">${esc(v.label)}${v.user ? ` <span data-del-view="${esc(v.id)}" role="button" aria-label="${esc(tr("حذف العرض", "Delete view"))}" tabindex="0">${icon("x")}</span>` : ""}</button>`)
+          .map((v) => `<button type="button" class="ma-chip" data-view="${esc(v.id)}" aria-pressed="${v.id === state.view}">${esc(v.label)}${v.user ? ` <span data-del-view="${esc(v.id)}" role="button" aria-label="${esc(tr("حذف العرض", "Delete view"))}" tabindex="0">${icon("x")}</span>` : ""}</button>`)
           .join("")}
-        <button type="button" class="adm-chip" data-save-view>${icon("plus")}${esc(tr("حفظ العرض الحالي", "Save current view"))}</button>
+        <button type="button" class="ma-chip" data-save-view>${icon("plus")}${esc(tr("حفظ العرض الحالي", "Save current view"))}</button>
       </div>` : ""}
-      <div class="adm-toolbar">
-        ${cfg.search ? `<div class="adm-search">${icon("search")}<input class="adm-input adm-input--search" type="search" data-q value="${esc(state.q)}" placeholder="${esc(cfg.searchPlaceholder ?? tr("بحث…", "Search…"))}" aria-label="${esc(tr("بحث في الجدول", "Search table"))}"></div>` : ""}
+      <div class="ma-toolbar">
+        ${cfg.search ? `<div class="ma-search">${icon("search")}<input class="ma-input ma-input--search" type="search" data-q value="${esc(state.q)}" placeholder="${esc(cfg.searchPlaceholder ?? tr("بحث…", "Search…"))}" aria-label="${esc(tr("بحث في الجدول", "Search table"))}"></div>` : ""}
         ${(cfg.filters ?? [])
           .map(
-            (f) => `<select class="adm-select" data-filter="${f.key}" aria-label="${esc(f.label)}">
+            (f) => `<select class="ma-select" data-filter="${f.key}" aria-label="${esc(f.label)}">
               <option value="">${esc(f.label)}: ${esc(tr("الكل", "All"))}</option>
               ${f.options.map(([v, l]) => `<option value="${esc(v)}"${String(state.filters[f.key] ?? "") === String(v) ? " selected" : ""}>${esc(l)}</option>`).join("")}
             </select>`,
           )
           .join("")}
-        <span class="adm-spacer"></span>
+        <span class="ma-spacer"></span>
         ${cfg.exportable !== false ? btn(tr("تصدير CSV", "Export CSV"), { ic: "download", sm: true, attrs: "data-export" }) : ""}
       </div>
-      ${bulk && state.selected.size ? `<div class="adm-bulkbar"><strong>${fmtNum(state.selected.size)} ${esc(tr("محدد", "selected"))}</strong>
+      ${bulk && state.selected.size ? `<div class="ma-bulkbar"><strong>${fmtNum(state.selected.size)} ${esc(tr("محدد", "selected"))}</strong>
         ${cfg.bulk.map((b, i) => btn(b.label, { sm: true, attrs: `data-bulk="${i}"` })).join("")}
         ${btn(tr("إلغاء التحديد", "Clear selection"), { sm: true, attrs: "data-clear" })}</div>` : ""}
-      ${total ? `<div class="adm-table-wrap"><table class="adm-table">
-        <caption class="adm-sr">${esc(cfg.label ?? "")}</caption>
+      ${total ? `<div class="ma-table-wrap"><table class="ma-table">
+        <caption class="ma-sr">${esc(cfg.label ?? "")}</caption>
         <thead><tr>
           ${bulk ? `<th scope="col" style="width:40px"><input type="checkbox" data-all aria-label="${esc(tr("تحديد الصفحة", "Select page"))}" ${allOnPage ? "checked" : ""}></th>` : ""}
           ${cfg.columns
@@ -103,15 +103,15 @@ export function dataTable(el, cfg) {
             .join("")}
         </tbody>
       </table></div>
-      <div class="adm-pager">
+      <div class="ma-pager">
         <span>${esc(tr("عرض", "Showing"))} ${fmtNum((state.page - 1) * state.pageSize + 1)}–${fmtNum(Math.min(state.page * state.pageSize, total))} ${esc(tr("من", "of"))} ${fmtNum(total)}</span>
-        <span class="adm-spacer"></span>
-        <label class="adm-row">${esc(tr("لكل صفحة", "Per page"))}
-          <select class="adm-select" data-size>${[10, 25, 50].map((n) => `<option${n === state.pageSize ? " selected" : ""}>${n}</option>`).join("")}</select></label>
-        <button type="button" class="adm-btn adm-btn--bare" data-page="-1" aria-label="${esc(tr("السابق", "Previous"))}" ${state.page === 1 ? "disabled" : ""}>${icon("chevronStart", "adm-icon-dir")}</button>
-        <span class="adm-num">${fmtNum(state.page)} / ${fmtNum(pages)}</span>
-        <button type="button" class="adm-btn adm-btn--bare" data-page="1" aria-label="${esc(tr("التالي", "Next"))}" ${state.page === pages ? "disabled" : ""}>${icon("chevronEnd", "adm-icon-dir")}</button>
-      </div>` : `<div class="adm-empty">${icon("search")}<p>${esc(cfg.emptyText ?? tr("لا توجد نتائج مطابقة. جرّب تغيير البحث أو الفلاتر.", "No matching results. Try changing the search or filters."))}</p></div>`}
+        <span class="ma-spacer"></span>
+        <label class="ma-cluster">${esc(tr("لكل صفحة", "Per page"))}
+          <select class="ma-select" data-size>${[10, 25, 50].map((n) => `<option${n === state.pageSize ? " selected" : ""}>${n}</option>`).join("")}</select></label>
+        <button type="button" class="ma-btn ma-btn--bare ma-btn--icon" data-page="-1" aria-label="${esc(tr("السابق", "Previous"))}" ${state.page === 1 ? "disabled" : ""}>${icon("chevronStart", "ma-icon-dir")}</button>
+        <span class="ma-num">${fmtNum(state.page)} / ${fmtNum(pages)}</span>
+        <button type="button" class="ma-btn ma-btn--bare ma-btn--icon" data-page="1" aria-label="${esc(tr("التالي", "Next"))}" ${state.page === pages ? "disabled" : ""}>${icon("chevronEnd", "ma-icon-dir")}</button>
+      </div>` : `<div class="ma-empty">${icon("search")}<p>${esc(cfg.emptyText ?? tr("لا توجد نتائج مطابقة. جرّب تغيير البحث أو الفلاتر.", "No matching results. Try changing the search or filters."))}</p></div>`}
     </section>`;
     wire();
   }
@@ -168,8 +168,8 @@ export function dataTable(el, cfg) {
     el.querySelector("[data-save-view]")?.addEventListener("click", () => {
       modal({
         title: tr("حفظ العرض", "Save view"),
-        body: `<div class="adm-field"><label for="view-name">${esc(tr("اسم العرض", "View name"))}</label><input class="adm-input" id="view-name" placeholder="${esc(tr("مثال: طلبات تمارا غير المكتملة", "e.g. Unpaid Tamara orders"))}"></div>
-          <p class="adm-muted adm-section-gap">${esc(tr("يحفظ البحث والفلاتر الحالية على هذا الجهاز.", "Saves the current search and filters on this device."))}</p>`,
+        body: `<div class="ma-field"><label class="ma-label" for="view-name">${esc(tr("اسم العرض", "View name"))}</label><input class="ma-input" id="view-name" placeholder="${esc(tr("مثال: طلبات تمارا غير المكتملة", "e.g. Unpaid Tamara orders"))}"></div>
+          <p class="ma-muted ma-section-gap">${esc(tr("يحفظ البحث والفلاتر الحالية على هذا الجهاز.", "Saves the current search and filters on this device."))}</p>`,
         foot: `${btn(tr("إلغاء", "Cancel"), { attrs: "data-close" })}${btn(tr("حفظ العرض", "Save view"), { kind: "primary", attrs: "data-ok" })}`,
         onMount(panel, close) {
           panel.querySelector("[data-ok]").addEventListener("click", () => {

@@ -58,11 +58,11 @@ function render(path) {
   const main = renderShell(app, { path, crumbs, moduleId: page.module });
 
   app.classList.toggle("is-sidebar-collapsed", load("sidebarCollapsed", false));
-  app.classList.toggle("is-focus", !!page.focus && !load("studioSidebar", false));
+  app.classList.toggle("is-studio", !!page.focus && !load("studioSidebar", false));
   app.classList.remove("is-nav-open");
-  main.classList.toggle("adm-content--wide", !!page.wide);
+  main.classList.toggle("ma-content--wide", !!page.wide);
   document.title = `${page.title} · ${tr("إدارة ماستري", "Mastery Admin")}`;
-  document.querySelector(".adm-skip").textContent = tr("تخطي إلى المحتوى", "Skip to content");
+  document.querySelector(".ma-skip").textContent = tr("تخطي إلى المحتوى", "Skip to content");
 
   page.render(main);
   if (!firstRender) {
@@ -80,15 +80,15 @@ function rerender() {
 // One set of delegated listeners for shell controls (the shell re-renders on every route).
 document.addEventListener("click", (e) => {
   const t = e.target.closest("[data-toggle-sidebar],[data-open-nav],[data-close-nav],[data-lang],[data-theme-toggle],[data-role],[data-signout],[data-open-palette]");
-  if (!e.target.closest(".adm-menu")) {
-    document.querySelectorAll(".adm-menu__pop").forEach((p) => (p.hidden = true));
+  if (!e.target.closest(".ma-menu")) {
+    document.querySelectorAll(".ma-menu__pop").forEach((p) => (p.hidden = true));
     document.querySelectorAll("[data-user-menu]").forEach((b) => b.setAttribute("aria-expanded", "false"));
   }
   if (!t) return;
   if (t.matches("[data-toggle-sidebar]")) {
-    if (app.classList.contains("is-focus")) {
+    if (app.classList.contains("is-studio")) {
       save("studioSidebar", true);
-      app.classList.remove("is-focus");
+      app.classList.remove("is-studio");
     } else {
       const next = !app.classList.contains("is-sidebar-collapsed");
       save("sidebarCollapsed", next);
@@ -96,7 +96,7 @@ document.addEventListener("click", (e) => {
     }
   } else if (t.matches("[data-open-nav]")) {
     app.classList.add("is-nav-open");
-    app.querySelector(".adm-sidebar a, .adm-rail a")?.focus();
+    app.querySelector(".ma-sidebar a, .ma-rail a")?.focus();
   } else if (t.matches("[data-close-nav]")) {
     app.classList.remove("is-nav-open");
   } else if (t.matches("[data-lang]")) {
@@ -138,20 +138,6 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
-async function loadSprite() {
-  try {
-    const res = await fetch("design-system/sprite.svg");
-    if (!res.ok) return;
-    const svg = await res.text();
-    if (!svg.includes("<svg")) return;
-    document.getElementById("sprite").innerHTML = svg;
-    rerender();
-  } catch {
-    /* kit not installed yet: placeholder mark stays */
-  }
-}
-
 applyTheme();
 applyLang();
 start(render);
-loadSprite();

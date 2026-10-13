@@ -1,4 +1,5 @@
-// Placeholder stroke icons until the kit sprite (design-system/sprite.svg) is in place.
+// Icons. The kit sprite (design-system/sprite.svg, inlined in index.html) supplies the brand glyphs;
+// the rest are line icons drawn with square caps and joins to match the kit's square-cornered style.
 const P = {
   home: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/>',
   cart: '<circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/><path d="M2 3h3l2.5 12h12l2-8H6.2"/>',
@@ -66,6 +67,13 @@ const P = {
   sparkle: '<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5L18 18M6 18l2.5-2.5M15.5 8.5L18 6"/>',
 };
 
+const KIT = { search: "i-search", check: "i-check", alert: "i-alert", play: "i-play", arrowBack: "i-arrow", arrowForward: "i-arrow", clock: "i-clock", book: "i-book" };
+
 export function icon(name, cls = "") {
-  return `<svg class="adm-icon ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${P[name] ?? P.file}</svg>`;
+  if (KIT[name]) {
+    // The kit arrow points forward; "back" mirrors it in the reading direction.
+    const dir = name === "arrowBack" ? "ma-icon-back" : name === "arrowForward" ? "ma-icon-dir" : "";
+    return `<svg class="ma-icon ma-icon--fill ${dir}" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><use href="#${KIT[name]}"></use></svg>`;
+  }
+  return `<svg class="ma-icon ${cls}" viewBox="0 0 24 24" aria-hidden="true" focusable="false">${P[name] ?? P.file}</svg>`;
 }

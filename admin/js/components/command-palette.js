@@ -62,12 +62,12 @@ export function openPalette() {
   const opener = document.activeElement;
   const root = document.getElementById("overlay-root");
   const wrap = document.createElement("div");
-  wrap.className = "adm-backdrop";
-  wrap.innerHTML = `<div class="adm-palette" role="dialog" aria-modal="true" aria-label="${esc(tr("البحث الشامل", "Command search"))}">
-    <input class="adm-palette__input" type="text" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list"
+  wrap.className = "ma-backdrop";
+  wrap.innerHTML = `<div class="ma-palette" role="dialog" aria-modal="true" aria-label="${esc(tr("البحث الشامل", "Command search"))}">
+    <input class="ma-palette__input" type="text" role="combobox" aria-expanded="true" aria-controls="pal-list" aria-autocomplete="list"
       placeholder="${esc(tr("اكتب صفحة أو إجراء أو رقم طلب أو اسم عميل…", "Type a page, action, order number or customer…"))}">
-    <ul class="adm-palette__list" id="pal-list" role="listbox"></ul>
-    <div class="adm-palette__foot"><span><span class="adm-kbd">↑↓</span> ${esc(tr("تنقل", "move"))}</span><span><span class="adm-kbd">Enter</span> ${esc(tr("فتح", "open"))}</span><span><span class="adm-kbd">Esc</span> ${esc(tr("إغلاق", "close"))}</span></div>
+    <ul class="ma-palette__list" id="pal-list" role="listbox"></ul>
+    <div class="ma-palette__foot"><span><span class="ma-kbd">↑↓</span> ${esc(tr("تنقل", "move"))}</span><span><span class="ma-kbd">Enter</span> ${esc(tr("فتح", "open"))}</span><span><span class="ma-kbd">Esc</span> ${esc(tr("إغلاق", "close"))}</span></div>
   </div>`;
   root.append(wrap);
   const input = wrap.querySelector("input");
@@ -93,16 +93,16 @@ export function openPalette() {
       ? groups
           .map(
             ([g, items]) =>
-              `<li role="presentation" class="adm-palette__group">${esc(g)}</li>` +
+              `<li role="presentation" class="ma-palette__group">${esc(g)}</li>` +
               items
                 .map((it) => {
                   const i = n++;
-                  return `<li role="option" id="pal-${i}" class="adm-palette__item" data-i="${i}" aria-selected="${i === sel}">${icon(it.ic)}<span>${esc(it.label)}</span><span class="adm-palette__path">${esc(it.path)}</span></li>`;
+                  return `<li role="option" id="pal-${i}" class="ma-palette__item" data-i="${i}" aria-selected="${i === sel}">${icon(it.ic)}<span>${esc(it.label)}</span><span class="ma-palette__path">${esc(it.path)}</span></li>`;
                 })
                 .join(""),
           )
           .join("")
-      : `<li class="adm-palette__group" role="presentation">${esc(tr("لا نتائج", "No results"))}</li>`;
+      : `<li class="ma-palette__group" role="presentation">${esc(tr("لا نتائج", "No results"))}</li>`;
     input.setAttribute("aria-activedescendant", flat.length ? `pal-${sel}` : "");
     list.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: "nearest" });
   };

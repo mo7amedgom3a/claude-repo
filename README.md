@@ -7,7 +7,7 @@ areas listed in the legacy discovery report.
 
 - Arabic first (RTL), with an English (LTR) toggle. Light and dark themes.
 - No build step. Plain ES modules and hand-written mock data. It makes no network calls.
-- Built on the Mastery design-system role tokens (see [Design system kit](#design-system-kit)).
+- Built on the Mastery Academy design system (see [Design system](#design-system)).
 
 ## Run it
 
@@ -81,8 +81,8 @@ The active sidebar item is the most specific `href` that matches on whole path s
 
 ```
 index.html                 shell; links design-system CSS
-design-system/             Mastery kit goes here (see below)
-admin/css/admin.css        admin layout + components on role tokens; placeholder tokens in @layer fallback
+design-system/             Mastery Academy design system (tokens, components, sprite)
+admin/css/admin.css        admin-only layout and components on the kit tokens
 admin/js/
   main.js                  boot, theme, language, shell controls, keyboard shortcuts
   router.js                hash router with :params, optional segments and a leave-page guard
@@ -100,20 +100,32 @@ admin/js/
 ports 1:1 to `src/config/navigation.ts`. The page modules map to `features/<domain>`, and
 `components/` maps to `components/admin/` in the Next.js structure.
 
-## Design system kit
+## Design system
 
-Copy the kit (`fonts.css`, `tokens.css`, `components.css`, `sprite.svg`, `assets/`) into
-`design-system/`. `index.html` already links `fonts.css` and `tokens.css`, and `main.js`
-inlines `sprite.svg` for `#ma-mark`. Until the kit is there, the prototype uses placeholder
-values for the role tokens (`--surface`, `--text`, `--accent`, `--on-accent`, `--focus`,
-`--radius-*` and others). They sit in `@layer fallback` in `admin/css/admin.css`, so the kit's
-unlayered `tokens.css` overrides them without any code change. Admin components use `adm-*`
-classes built on those tokens; switch them to the kit's `.ma-*` component classes once
-`components.css` is available.
+The prototype uses the Mastery Academy design system in `design-system/`:
 
-The design rules followed: soft radii from the scale only, borderless buttons, no shadows or
-gradients, one coral primary action per view, ink text on coral, status always shown as a word
-and not only a colour, logical CSS properties for RTL, a 2px purple focus ring, and 44px touch targets.
+| File | Source |
+|---|---|
+| `tokens.css` | Taken from the kit's `demo.html` (the "generated from tokens.json" block) |
+| `components.css`, `fonts.css`, `demo.html`, `README.md`, `docs/05-components.md` | Kit files as delivered |
+| `sprite.svg` | Taken from `demo.html`: `#ma-logo`, `#ma-mark` and the kit icons. Also inlined in `index.html` |
+
+Load order in `index.html`: `fonts.css` → `tokens.css` → `components.css` → `admin/css/admin.css`.
+
+- Buttons, tags, fields, checkboxes, alerts, avatars and links are the kit's `.ma-*` components.
+  Admin buttons map to the kit variants: one **primary** (coral) per view, **secondary** (ink)
+  for strong second actions, and **soft** for everything else; icon tools are **bare**.
+- `admin/css/admin.css` adds only what the kit doesn't have yet (shell, rail, sidebar, tables,
+  drawers, stepper, command palette, studio). These follow the kit's rules for new components:
+  `.ma-<name>` naming, radii from the scale, 1px rules, no shadows, logical properties, role tokens.
+- Status badges always show a word; the status colour is a small square next to it, because the
+  kit's success/warning/danger colours are bright fills and don't work as text colours.
+- The rail uses the kit's ink field (like the footer) with the coral `#ma-mark`.
+
+Still missing from the kit: the `.woff2` files that `fonts.css` points to (`assets/fonts/`),
+the other `docs/` pages, `tokens.json` and the logo files. Until the font files arrive,
+IBM Plex Sans Arabic loads from Google Fonts. English text uses the kit's `--font-sans`
+stack, which falls back to Helvetica Neue/Arial until Neue Montreal is licensed.
 
 ## Data and security notes
 

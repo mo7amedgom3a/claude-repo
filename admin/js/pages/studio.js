@@ -41,12 +41,12 @@ export function studioPage({ id, section = "curriculum" }) {
     wide: true,
     render(el) {
       el.innerHTML = `
-        <div class="adm-studio-head">
-          <a class="adm-back" style="margin:0" href="#/learning/courses/${c.id}">${icon("arrowBack", "adm-icon-dir")}${esc(tr("تفاصيل الدورة", "Course details"))}</a>
-          <span class="adm-thumb" style="background:${c.color};margin:0"></span>
+        <div class="ma-studio-head">
+          <a class="ma-back" style="margin:0" href="#/learning/courses/${c.id}">${icon("arrowBack", "ma-icon-dir")}${esc(tr("تفاصيل الدورة", "Course details"))}</a>
+          <span class="ma-thumb" style="background:${c.color};margin:0"></span>
           <h1 style="font-size:20px">${esc(tr(c.title))}</h1>${badge(COURSE_STATUS[c.status])}
-          <span class="adm-spacer"></span>
-          <span class="adm-muted adm-row" style="font-size:13px">${icon("refresh")}${esc(tr("متزامن مع نظام التعلم منذ دقيقتين", "Synced with the LMS 2 min ago"))}</span>
+          <span class="ma-spacer"></span>
+          <span class="ma-muted ma-cluster" style="font-size:13px">${icon("refresh")}${esc(tr("متزامن مع نظام التعلم منذ دقيقتين", "Synced with the LMS 2 min ago"))}</span>
           ${btn(tr("معاينة كمتدرب", "Preview as student"), { ic: "eye" })}
           ${editable ? btn(tr("نشر التغييرات", "Publish changes"), { kind: "primary", attrs: "data-publish" }) : ""}
         </div>
@@ -75,31 +75,31 @@ function curriculum(el, c, editable) {
   function paint() {
     const sel = find(selected);
     const totalVideo = units.flatMap((u) => u.items).reduce((s, x) => s + (x.duration ?? 0), 0);
-    el.innerHTML = `<div class="adm-studio">
-      <aside class="adm-card adm-outline" aria-label="${esc(tr("هيكل الدورة", "Course outline"))}" style="padding:12px">
-        <div class="adm-row" style="padding:0 4px 8px"><strong>${esc(tr("الهيكل", "Outline"))}</strong><span class="adm-spacer"></span><span class="adm-muted" style="font-size:13px">${fmtNum(units.length)} ${esc(tr("وحدات", "units"))} · ${esc(fmtDuration(totalVideo))}</span></div>
+    el.innerHTML = `<div class="ma-studio">
+      <aside class="ma-panel ma-outline" aria-label="${esc(tr("هيكل الدورة", "Course outline"))}" style="padding:12px">
+        <div class="ma-cluster" style="padding:0 4px 8px"><strong>${esc(tr("الهيكل", "Outline"))}</strong><span class="ma-spacer"></span><span class="ma-muted" style="font-size:13px">${fmtNum(units.length)} ${esc(tr("وحدات", "units"))} · ${esc(fmtDuration(totalVideo))}</span></div>
         ${units
           .map(
-            (u, ui) => `<div class="adm-outline__unit">
-            <div class="adm-outline__unit-head">${icon("folder")}<span style="flex:1">${esc(tr(u.title))}</span></div>
-            <ul class="adm-outline__items" data-unit="${ui}">
+            (u, ui) => `<div class="ma-outline__unit">
+            <div class="ma-outline__unit-head">${icon("folder")}<span style="flex:1">${esc(tr(u.title))}</span></div>
+            <ul class="ma-outline__items" data-unit="${ui}">
               ${u.items
                 .map(
                   (it) => `<li draggable="${editable}" data-item="${it.id}">
-                  <button type="button" class="adm-outline__item" data-select="${it.id}" aria-current="${it.id === selected}">
-                    ${editable ? `<span class="adm-grip" aria-hidden="true">${icon("grip")}</span>` : ""}${icon(KIND[it.kind].ic)}<span style="flex:1">${esc(tr(it.title))}</span>
-                    ${it.published ? "" : `<span class="adm-tag adm-tag--plain">${esc(tr("مخفي", "Hidden"))}</span>`}
+                  <button type="button" class="ma-outline__item" data-select="${it.id}" aria-current="${it.id === selected}">
+                    ${editable ? `<span class="ma-grip" aria-hidden="true">${icon("grip")}</span>` : ""}${icon(KIND[it.kind].ic)}<span style="flex:1">${esc(tr(it.title))}</span>
+                    ${it.published ? "" : `<span class="ma-tag ma-tag--soft">${esc(tr("مخفي", "Hidden"))}</span>`}
                   </button></li>`,
                 )
                 .join("")}
             </ul>
-            ${editable ? `<button type="button" class="adm-btn adm-btn--sm" style="margin:0 0 10px" data-add-item="${ui}">${icon("plus")}${esc(tr("إضافة عنصر", "Add item"))}</button>` : ""}
+            ${editable ? `<button type="button" class="ma-btn ma-btn--soft ma-btn--sm" style="margin:0 0 10px" data-add-item="${ui}">${icon("plus")}${esc(tr("إضافة عنصر", "Add item"))}</button>` : ""}
           </div>`,
           )
           .join("")}
-        ${editable ? `<div class="adm-section-gap">${btn(tr("إضافة وحدة", "Add unit"), { ic: "plus", sm: true, attrs: "data-add-unit" })}</div>` : ""}
+        ${editable ? `<div class="ma-section-gap">${btn(tr("إضافة وحدة", "Add unit"), { ic: "plus", sm: true, attrs: "data-add-unit" })}</div>` : ""}
       </aside>
-      <section class="adm-stack" aria-live="polite">
+      <section class="ma-stack" aria-live="polite">
         ${alert("info", tr("المحتوى يعيش في نظام التعلم", "Content lives in the LMS"), esc(tr("التعديلات هنا تُرسل عبر lms_integration ولا تُنسخ إلى قاعدة بيانات المتجر.", "Edits here go through lms_integration; they are not copied into the commerce database.")))}
         ${sel ? editor(sel, editable) : card("", empty(tr("اختر عنصرًا من الهيكل لتعديله", "Pick an item in the outline to edit it"), "layers"))}
       </section>
@@ -111,24 +111,24 @@ function curriculum(el, c, editable) {
     const dis = canEdit ? "" : "disabled";
     let kindBody = "";
     if (item.kind === "video")
-      kindBody = `<div class="adm-video" role="img" aria-label="${esc(tr("معاينة الفيديو", "Video preview"))}">${icon("play")}</div>
-        <div class="adm-row adm-section-gap"><span class="adm-muted">${esc(tr("المدة", "Duration"))}: ${esc(fmtDuration(item.duration ?? 0))} · Bunny Stream</span><span class="adm-spacer"></span>${canEdit ? btn(tr("استبدال الفيديو", "Replace video"), { sm: true, ic: "upload" }) : ""}</div>`;
-    else if (item.kind === "quiz") kindBody = `<p>${esc(tr("10 أسئلة · درجة النجاح 60% · 3 محاولات", "10 questions · pass mark 60% · 3 attempts"))}</p><div class="adm-section-gap">${btn(tr("تحرير الأسئلة", "Edit questions"), { href: `/learning/courses/${c.id}/studio/quizzes`, sm: true })}</div>`;
-    else if (item.kind === "assignment") kindBody = `<p>${esc(tr("واجب تطبيقي يُقيّمه المدرب يدويًا.", "Applied assignment graded manually by the instructor."))}</p><div class="adm-section-gap">${btn(tr("عرض التسليمات", "View submissions"), { href: `/learning/courses/${c.id}/studio/assignments`, sm: true })}</div>`;
-    else if (item.kind === "live") kindBody = `<p>${esc(tr("جلسة Zoom مرتبطة بهذا الدرس.", "A Zoom session linked to this lesson."))}</p><div class="adm-section-gap">${btn(tr("إدارة الجلسات", "Manage sessions"), { href: `/learning/courses/${c.id}/studio/live-sessions`, sm: true })}</div>`;
-    else kindBody = `<div class="adm-row">${icon("file")}<span>unit-summary.pdf · 1.2 MB</span><span class="adm-spacer"></span>${canEdit ? btn(tr("استبدال", "Replace"), { sm: true, ic: "upload" }) : ""}</div>`;
+      kindBody = `<div class="ma-video" role="img" aria-label="${esc(tr("معاينة الفيديو", "Video preview"))}">${icon("play")}</div>
+        <div class="ma-cluster ma-section-gap"><span class="ma-muted">${esc(tr("المدة", "Duration"))}: ${esc(fmtDuration(item.duration ?? 0))} · Bunny Stream</span><span class="ma-spacer"></span>${canEdit ? btn(tr("استبدال الفيديو", "Replace video"), { sm: true, ic: "upload" }) : ""}</div>`;
+    else if (item.kind === "quiz") kindBody = `<p>${esc(tr("10 أسئلة · درجة النجاح 60% · 3 محاولات", "10 questions · pass mark 60% · 3 attempts"))}</p><div class="ma-section-gap">${btn(tr("تحرير الأسئلة", "Edit questions"), { href: `/learning/courses/${c.id}/studio/quizzes`, sm: true })}</div>`;
+    else if (item.kind === "assignment") kindBody = `<p>${esc(tr("واجب تطبيقي يُقيّمه المدرب يدويًا.", "Applied assignment graded manually by the instructor."))}</p><div class="ma-section-gap">${btn(tr("عرض التسليمات", "View submissions"), { href: `/learning/courses/${c.id}/studio/assignments`, sm: true })}</div>`;
+    else if (item.kind === "live") kindBody = `<p>${esc(tr("جلسة Zoom مرتبطة بهذا الدرس.", "A Zoom session linked to this lesson."))}</p><div class="ma-section-gap">${btn(tr("إدارة الجلسات", "Manage sessions"), { href: `/learning/courses/${c.id}/studio/live-sessions`, sm: true })}</div>`;
+    else kindBody = `<div class="ma-cluster">${icon("file")}<span>unit-summary.pdf · 1.2 MB</span><span class="ma-spacer"></span>${canEdit ? btn(tr("استبدال", "Replace"), { sm: true, ic: "upload" }) : ""}</div>`;
     return card(
       tr(item.title),
-      `<form class="adm-form" data-editor>
-        <div class="adm-form-grid">
+      `<form class="ma-form" data-editor>
+        <div class="ma-form-grid">
           ${field({ id: "it-title", label: tr("العنوان", "Title"), value: tr(item.title), required: true, attrs: dis })}
           ${field({ id: "it-kind", label: tr("النوع", "Type"), value: item.kind, options: Object.entries(KIND).map(([k, v]) => [k, tr(v.label)]), attrs: dis })}
         </div>
         ${kindBody}
-        <label class="adm-check"><input type="checkbox" id="it-pub" ${item.published ? "checked" : ""} ${dis}> ${esc(tr("ظاهر للمتدربين", "Visible to students"))}</label>
-        <label class="adm-check"><input type="checkbox" ${dis} ${item.kind === "video" ? "checked" : ""}> ${esc(tr("درس مجاني للمعاينة", "Free preview lesson"))}</label>
-        ${canEdit ? `<div class="adm-row">
-          <span class="adm-muted" style="font-size:13px">${esc(tr("الموضع", "Position"))}: ${esc(tr(unit.title))} · ${index + 1}</span><span class="adm-spacer"></span>
+        <label class="ma-check"><input type="checkbox" id="it-pub" ${item.published ? "checked" : ""} ${dis}> ${esc(tr("ظاهر للمتدربين", "Visible to students"))}</label>
+        <label class="ma-check"><input type="checkbox" ${dis} ${item.kind === "video" ? "checked" : ""}> ${esc(tr("درس مجاني للمعاينة", "Free preview lesson"))}</label>
+        ${canEdit ? `<div class="ma-cluster">
+          <span class="ma-muted" style="font-size:13px">${esc(tr("الموضع", "Position"))}: ${esc(tr(unit.title))} · ${index + 1}</span><span class="ma-spacer"></span>
           ${btn(tr("تحريك لأعلى", "Move up"), { sm: true, attrs: "data-move=-1" })}${btn(tr("تحريك لأسفل", "Move down"), { sm: true, attrs: "data-move=1" })}
           ${btn(tr("حذف", "Delete"), { sm: true, kind: "danger", ic: "trash", attrs: "data-delete" })}
           ${btn(tr("حفظ العنصر", "Save item"), { sm: true, kind: "ink", attrs: "data-save" })}
@@ -182,7 +182,7 @@ function curriculum(el, c, editable) {
       b.addEventListener("click", () =>
         drawer({
           title: tr("إضافة عنصر", "Add item"),
-          body: `<div class="adm-form">${field({ id: "ni-title", label: tr("العنوان", "Title"), required: true })}${field({ id: "ni-kind", label: tr("النوع", "Type"), options: Object.entries(KIND).map(([k, v]) => [k, tr(v.label)]) })}</div>`,
+          body: `<div class="ma-form">${field({ id: "ni-title", label: tr("العنوان", "Title"), required: true })}${field({ id: "ni-kind", label: tr("النوع", "Type"), options: Object.entries(KIND).map(([k, v]) => [k, tr(v.label)]) })}</div>`,
           foot: `${btn(tr("إلغاء", "Cancel"), { attrs: "data-close" })}${btn(tr("إضافة", "Add"), { kind: "primary", attrs: "data-ok" })}`,
           onMount(p, close) {
             p.querySelector("[data-ok]").addEventListener("click", () => {
@@ -204,15 +204,15 @@ function curriculum(el, c, editable) {
     el.querySelectorAll("li[data-item]").forEach((li) => {
       li.addEventListener("dragstart", (e) => {
         dragId = li.dataset.item;
-        li.classList.add("adm-dragging");
+        li.classList.add("ma-dragging");
         e.dataTransfer.effectAllowed = "move";
       });
-      li.addEventListener("dragend", () => li.classList.remove("adm-dragging"));
+      li.addEventListener("dragend", () => li.classList.remove("ma-dragging"));
       li.addEventListener("dragover", (e) => {
         e.preventDefault();
-        li.classList.add("adm-drop-target");
+        li.classList.add("ma-drop-target");
       });
-      li.addEventListener("dragleave", () => li.classList.remove("adm-drop-target"));
+      li.addEventListener("dragleave", () => li.classList.remove("ma-drop-target"));
       li.addEventListener("drop", (e) => {
         e.preventDefault();
         if (!dragId || dragId === li.dataset.item) return;
@@ -232,7 +232,7 @@ function curriculum(el, c, editable) {
 
 /* ---------- Other studio sections ---------- */
 function table(head, rows) {
-  return `<div class="adm-table-wrap"><table class="adm-table"><thead><tr>${head.map((h) => `<th class="${h.num ? "is-num" : ""}">${esc(h.l ?? h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
+  return `<div class="ma-table-wrap"><table class="ma-table"><thead><tr>${head.map((h) => `<th class="${h.num ? "is-num" : ""}">${esc(h.l ?? h)}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
 }
 
 function quizzes(el, c, editable) {
@@ -240,7 +240,7 @@ function quizzes(el, c, editable) {
   const qz = units.map((u, i) => ({ id: i + 1, unit: u, title: { ar: `اختبار ${tr(u.title).split(":")[0]}`, en: `Quiz — ${u.title.en.split(":")[0]}` }, questions: 6 + ((c.id + i) % 9), pass: 60, attempts: 2 + (i % 3), avg: 58 + ((c.id * (i + 3)) % 35) }));
   el.innerHTML = card(
     tr("الاختبارات", "Quizzes"),
-    table([tr("الاختبار", "Quiz"), { l: tr("الأسئلة", "Questions"), num: true }, { l: tr("درجة النجاح", "Pass mark"), num: true }, { l: tr("المحاولات", "Attempts"), num: true }, { l: tr("متوسط الدرجات", "Average score"), num: true }, ""], qz.map((q) => `<tr><td><strong>${esc(tr(q.title))}</strong><span class="adm-cell-sub">${esc(tr(q.unit.title))}</span></td><td class="is-num">${q.questions}</td><td class="is-num">${q.pass}%</td><td class="is-num">${q.attempts}</td><td class="is-num">${q.avg}%</td><td>${btn(editable ? tr("تحرير الأسئلة", "Edit questions") : tr("عرض", "View"), { sm: true, attrs: `data-quiz="${q.id}"` })}</td></tr>`)),
+    table([tr("الاختبار", "Quiz"), { l: tr("الأسئلة", "Questions"), num: true }, { l: tr("درجة النجاح", "Pass mark"), num: true }, { l: tr("المحاولات", "Attempts"), num: true }, { l: tr("متوسط الدرجات", "Average score"), num: true }, ""], qz.map((q) => `<tr><td><strong>${esc(tr(q.title))}</strong><span class="ma-cell-sub">${esc(tr(q.unit.title))}</span></td><td class="is-num">${q.questions}</td><td class="is-num">${q.pass}%</td><td class="is-num">${q.attempts}</td><td class="is-num">${q.avg}%</td><td>${btn(editable ? tr("تحرير الأسئلة", "Edit questions") : tr("عرض", "View"), { sm: true, attrs: `data-quiz="${q.id}"` })}</td></tr>`)),
     { flush: true, actions: editable ? btn(tr("إضافة اختبار", "Add quiz"), { sm: true, ic: "plus" }) : "" },
   );
   el.querySelectorAll("[data-quiz]").forEach((b) =>
@@ -249,7 +249,7 @@ function quizzes(el, c, editable) {
       drawer({
         title: tr(q.title),
         wide: true,
-        body: `<ol class="adm-list">${Array.from({ length: q.questions }, (_, i) => `<li><span class="adm-avatar" style="background:${COLORS[i % 8]}">${i + 1}</span><div class="adm-list__main"><strong>${esc(tr(["ما الهدف الأساسي من هذا الأسلوب؟", "أي مما يلي يُعد مثالًا صحيحًا؟", "رتب الخطوات التالية بالترتيب الصحيح.", "صواب أم خطأ: يجب تطبيق الأسلوب في كل الحالات."][i % 4], ["What is the main goal of this approach?", "Which of these is a correct example?", "Put these steps in the right order.", "True or false: always apply this approach."][i % 4]))}</strong><span class="adm-list__sub">${esc(tr(["اختيار من متعدد", "اختيار من متعدد", "ترتيب", "صواب/خطأ"][i % 4], ["Multiple choice", "Multiple choice", "Ordering", "True/false"][i % 4]))}</span></div>${editable ? btn(tr("تعديل", "Edit"), { sm: true }) : ""}</li>`).join("")}</ol>`,
+        body: `<ol class="ma-list">${Array.from({ length: q.questions }, (_, i) => `<li><span class="ma-avatar" style="background:${COLORS[i % 8]}">${i + 1}</span><div class="ma-list__main"><strong>${esc(tr(["ما الهدف الأساسي من هذا الأسلوب؟", "أي مما يلي يُعد مثالًا صحيحًا؟", "رتب الخطوات التالية بالترتيب الصحيح.", "صواب أم خطأ: يجب تطبيق الأسلوب في كل الحالات."][i % 4], ["What is the main goal of this approach?", "Which of these is a correct example?", "Put these steps in the right order.", "True or false: always apply this approach."][i % 4]))}</strong><span class="ma-list__sub">${esc(tr(["اختيار من متعدد", "اختيار من متعدد", "ترتيب", "صواب/خطأ"][i % 4], ["Multiple choice", "Multiple choice", "Ordering", "True/false"][i % 4]))}</span></div>${editable ? btn(tr("تعديل", "Edit"), { sm: true }) : ""}</li>`).join("")}</ol>`,
         foot: editable ? `${btn(tr("إضافة سؤال", "Add question"), { ic: "plus" })}${btn(tr("تم", "Done"), { kind: "primary", attrs: "data-close" })}` : "",
       });
     }),
@@ -258,15 +258,15 @@ function quizzes(el, c, editable) {
 
 function assignments(el, c, editable) {
   const subs = customers.slice(c.id % 30, (c.id % 30) + 8);
-  el.innerHTML = `<div class="adm-grid adm-grid--main-side">
+  el.innerHTML = `<div class="ma-cols ma-cols--main-side">
     ${card(tr("تسليمات بانتظار التقييم", "Submissions to grade"), table([tr("المتدرب", "Student"), tr("الواجب", "Assignment"), tr("التسليم", "Submitted"), ""], subs.slice(0, 5).map((u, i) => `<tr><td>${customerCell(u.id)}</td><td>${esc(tr(`الواجب ${i + 1}`, `Assignment ${i + 1}`))}</td><td>${date(u.lastSeen)}</td><td>${editable || can("courses.grade") ? btn(tr("تقييم", "Grade"), { sm: true, attrs: `data-grade="${u.id}"` }) : ""}</td></tr>`)), { flush: true, actions: editable ? btn(tr("تقييم الكل كمكتمل", "Mark all complete"), { sm: true }) : "" })}
-    ${card(tr("الواجبات", "Assignments"), `<ul class="adm-list">${[1, 2, 3].map((n) => `<li>${icon("clipboard")}<div class="adm-list__main"><strong>${esc(tr(`الواجب ${n}`, `Assignment ${n}`))}</strong><span class="adm-list__sub">${fmtNum(20 + n * 13)} ${esc(tr("تسليم", "submissions"))}</span></div></li>`).join("")}</ul>`)}
+    ${card(tr("الواجبات", "Assignments"), `<ul class="ma-list">${[1, 2, 3].map((n) => `<li>${icon("clipboard")}<div class="ma-list__main"><strong>${esc(tr(`الواجب ${n}`, `Assignment ${n}`))}</strong><span class="ma-list__sub">${fmtNum(20 + n * 13)} ${esc(tr("تسليم", "submissions"))}</span></div></li>`).join("")}</ul>`)}
   </div>`;
   el.querySelectorAll("[data-grade]").forEach((b) =>
     b.addEventListener("click", () =>
       drawer({
         title: tr("تقييم التسليم", "Grade submission"),
-        body: `<div class="adm-form"><div class="adm-row">${icon("file")}<span>submission.pdf</span><span class="adm-spacer"></span>${btn(tr("فتح", "Open"), { sm: true, ic: "eye" })}</div>${field({ id: "gr", label: tr("الدرجة من 100", "Score out of 100"), type: "number", required: true, attrs: 'min="0" max="100"' })}${field({ id: "fb", label: tr("ملاحظات للمتدرب", "Feedback for the student"), type: "textarea" })}</div>`,
+        body: `<div class="ma-form"><div class="ma-cluster">${icon("file")}<span>submission.pdf</span><span class="ma-spacer"></span>${btn(tr("فتح", "Open"), { sm: true, ic: "eye" })}</div>${field({ id: "gr", label: tr("الدرجة من 100", "Score out of 100"), type: "number", required: true, attrs: 'min="0" max="100"' })}${field({ id: "fb", label: tr("ملاحظات للمتدرب", "Feedback for the student"), type: "textarea" })}</div>`,
         foot: `${btn(tr("إلغاء", "Cancel"), { attrs: "data-close" })}${btn(tr("حفظ الدرجة", "Save grade"), { kind: "primary", attrs: "data-ok" })}`,
         onMount(p, close) {
           p.querySelector("[data-ok]").addEventListener("click", () => {
@@ -291,7 +291,7 @@ function live(el, c, editable) {
   el.querySelector("[data-new]")?.addEventListener("click", () =>
     drawer({
       title: tr("جدولة جلسة مباشرة", "Schedule live session"),
-      body: `<div class="adm-form">${field({ id: "st", label: tr("العنوان", "Title"), required: true })}${field({ id: "sd", label: tr("الموعد", "Date and time"), type: "datetime-local", required: true })}${field({ id: "sp", label: tr("المزود", "Provider"), options: [["zoom", "Zoom"], ["bbb", "BigBlueButton"]] })}<label class="adm-check"><input type="checkbox" checked> ${esc(tr("إرسال تذكير للمتدربين قبل ساعة", "Remind students one hour before"))}</label></div>`,
+      body: `<div class="ma-form">${field({ id: "st", label: tr("العنوان", "Title"), required: true })}${field({ id: "sd", label: tr("الموعد", "Date and time"), type: "datetime-local", required: true })}${field({ id: "sp", label: tr("المزود", "Provider"), options: [["zoom", "Zoom"], ["bbb", "BigBlueButton"]] })}<label class="ma-check"><input type="checkbox" checked> ${esc(tr("إرسال تذكير للمتدربين قبل ساعة", "Remind students one hour before"))}</label></div>`,
       foot: `${btn(tr("إلغاء", "Cancel"), { attrs: "data-close" })}${btn(tr("جدولة", "Schedule"), { kind: "primary", attrs: "data-ok" })}`,
       onMount(p, close) {
         p.querySelector("[data-ok]").addEventListener("click", () => {
@@ -305,16 +305,16 @@ function live(el, c, editable) {
 }
 
 function forum(el, c) {
-  el.innerHTML = card(tr("مواضيع المنتدى", "Forum topics"), `<ul class="adm-list">${customers.slice(c.id % 40, (c.id % 40) + 5).map((u, i) => `<li>${icon("message")}<div class="adm-list__main"><strong>${esc(tr(["تجاربكم في تطبيق الأسلوب", "مصادر إضافية مقترحة", "سؤال حول الوحدة الثالثة", "مشاركة دراسة حالة", "نصائح للاختبار النهائي"][i], ["Your experience applying this", "Suggested extra resources", "Question on unit 3", "Sharing a case study", "Final quiz tips"][i]))}</strong><span class="adm-list__sub">${esc(tr(u.name))} · ${fmtNum(3 + i * 4)} ${esc(tr("رد", "replies"))}</span></div>${btn(tr("فتح", "Open"), { sm: true })}</li>`).join("")}</ul>`);
+  el.innerHTML = card(tr("مواضيع المنتدى", "Forum topics"), `<ul class="ma-list">${customers.slice(c.id % 40, (c.id % 40) + 5).map((u, i) => `<li>${icon("message")}<div class="ma-list__main"><strong>${esc(tr(["تجاربكم في تطبيق الأسلوب", "مصادر إضافية مقترحة", "سؤال حول الوحدة الثالثة", "مشاركة دراسة حالة", "نصائح للاختبار النهائي"][i], ["Your experience applying this", "Suggested extra resources", "Question on unit 3", "Sharing a case study", "Final quiz tips"][i]))}</strong><span class="ma-list__sub">${esc(tr(u.name))} · ${fmtNum(3 + i * 4)} ${esc(tr("رد", "replies"))}</span></div>${btn(tr("فتح", "Open"), { sm: true })}</li>`).join("")}</ul>`);
 }
 
 function wiki(el) {
-  el.innerHTML = card(tr("مقالات الويكي", "Wiki articles"), `<ul class="adm-list">${["مقدمة الدورة", "أدوات العمل", "قوالب قابلة للتحميل"].map((t, i) => `<li>${icon("wiki")}<div class="adm-list__main"><strong>${esc(tr(t, ["Course introduction", "Working tools", "Downloadable templates"][i]))}</strong></div>${btn(tr("تعديل", "Edit"), { sm: true })}</li>`).join("")}</ul>`, { actions: btn(tr("مقال جديد", "New article"), { sm: true, ic: "plus" }) });
+  el.innerHTML = card(tr("مقالات الويكي", "Wiki articles"), `<ul class="ma-list">${["مقدمة الدورة", "أدوات العمل", "قوالب قابلة للتحميل"].map((t, i) => `<li>${icon("wiki")}<div class="ma-list__main"><strong>${esc(tr(t, ["Course introduction", "Working tools", "Downloadable templates"][i]))}</strong></div>${btn(tr("تعديل", "Edit"), { sm: true })}</li>`).join("")}</ul>`, { actions: btn(tr("مقال جديد", "New article"), { sm: true, ic: "plus" }) });
 }
 
 function glossary(el) {
   const terms = [["KPI", "مؤشر الأداء الرئيسي", "Key performance indicator"], ["OKR", "الأهداف والنتائج الرئيسية", "Objectives and key results"], ["ROI", "العائد على الاستثمار", "Return on investment"], ["SWOT", "تحليل نقاط القوة والضعف والفرص والتهديدات", "Strengths, weaknesses, opportunities, threats"]];
-  el.innerHTML = card(tr("المصطلحات", "Glossary"), table([tr("المصطلح", "Term"), tr("التعريف", "Definition")], terms.map(([t, ar, en]) => `<tr><td><strong class="adm-ltr">${t}</strong></td><td>${esc(tr(ar, en))}</td></tr>`)), { flush: true, actions: btn(tr("إضافة مصطلح", "Add term"), { sm: true, ic: "plus" }) });
+  el.innerHTML = card(tr("المصطلحات", "Glossary"), table([tr("المصطلح", "Term"), tr("التعريف", "Definition")], terms.map(([t, ar, en]) => `<tr><td><strong class="ma-ltr">${t}</strong></td><td>${esc(tr(ar, en))}</td></tr>`)), { flush: true, actions: btn(tr("إضافة مصطلح", "Add term"), { sm: true, ic: "plus" }) });
 }
 
 function gradebook(el, c) {

@@ -17,7 +17,7 @@ const daysAgo = (d, h = int(8, 22)) => {
   return x.toISOString();
 };
 
-export const COLORS = ["var(--coral)", "var(--yellow)", "var(--sky)", "var(--green)", "var(--pink)", "var(--orange)", "var(--teal)", "var(--lilac)"];
+export const COLORS = ["var(--coral)", "var(--yellow)", "var(--sky)", "var(--green)", "var(--pink)", "var(--purple)", "var(--teal)", "var(--lilac)"];
 
 const FIRST = [
   ["محمد", "Mohamed"], ["سارة", "Sara"], ["أحمد", "Ahmed"], ["نورة", "Noura"], ["خالد", "Khaled"], ["ريم", "Reem"],
