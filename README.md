@@ -152,3 +152,7 @@ stack, which falls back to Helvetica Neue/Arial until Neue Montreal is licensed.
 3. Map the 61 legacy permission modules to scope strings (`settings/team/:roleId` shows the
    proposed grouping).
 4. Replace the dashboard's ~30 legacy requests with one `GET /admin/analytics/summary`.
+
+## Course details revamp demo
+
+`course-details-demo/` is a standalone redesign of the course details page (six tabs, sticky aside, AR/EN, light/dark). Open `/course-details-demo/` through the same local server.
